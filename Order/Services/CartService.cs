@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Newtonsoft.Json.Linq;
 using Order.Contracts.Repositories;
 using Order.Contracts.Services;
 using Order.Entities.Dtos;
@@ -12,17 +13,15 @@ namespace Order.Services
     public class CartService : ICartService
     {
         private readonly IMapper _mapper;
-        //private readonly IProductService _productService;
+        private readonly IApiService _apiService;
         private readonly ICartRepository _cartRepository;
-        //private readonly IProductRepository _productRepository;
 
 
-        public CartService(IMapper mapper, ICartRepository cartRepository)//, IProductService ProductService,IProductRepository productRepository)
+        public CartService(IMapper mapper, ICartRepository cartRepository, IApiService apiService)
         {
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
-            //_productService = ProductService ?? throw new ArgumentNullException(nameof(ProductService));
+            _apiService = apiService ?? throw new ArgumentNullException(nameof(apiService));
             _cartRepository = cartRepository ?? throw new ArgumentNullException(nameof(cartRepository));
-            //_productRepository = productRepository ?? throw new ArgumentNullException(nameof(productRepository));
         }
 
         ///<summary>
@@ -50,20 +49,27 @@ namespace Order.Services
         ///fetch cart in database
         ///</summary>
         ///param name="userId"></param>
-        public List<ReturnCartDto> GetCartForUser(Guid userId)
+        public List<ReturnCartDto> GetCartForUser(Guid userId, string token)
         {
             List<ReturnCartDto> resultCartDetails = new List<ReturnCartDto>();
 
             IEnumerable<Cart> cartDetails = _cartRepository.GetCartDetailsForUser(userId);
+            List<Guid> ids = new List<Guid>();
+            for (int i = 0; i < cartDetails.Count(); i++)
+            {
+                ids.Add(cartDetails.ElementAt(i).ProductId);
+            }
+            List<ResultProductDto> productList = _apiService.GetProductByIds(ids, token);
 
             for (int i = 0; i < cartDetails.Count(); i++)
             {
                 Cart cartDetail = cartDetails.ElementAt(i);
                 ReturnCartDto resultCart = new ReturnCartDto();
-                //resultCart.Product = _mapper.Map<ResultProductDto>(_productService.GetDetailedProductById(cartDetail.ProductId));
+                resultCart.Product = productList.Find(s => s.Id == cartDetail.ProductId);
                 resultCart.Quantity = cartDetail.Quantity;
                 resultCartDetails.Add(resultCart);
             }
+
             return resultCartDetails;
         }
 
@@ -119,24 +125,30 @@ namespace Order.Services
         ///</summary>
         ///param name="cartDetails"></param>
         ///<param name="authId"></param>
-        public Guid UpdateOrderIdToCart(List<Cart> cartDetails, Guid authId)
+        public string UpdateOrderIdToCart(List<Cart> cartDetails, Guid authId, string token)
         {
             Guid orderId = Guid.NewGuid();
+
+            List<UpdateProductQuantityDto> productList = new List<UpdateProductQuantityDto>();
+            for (int i = 0; i < cartDetails.Count; i++)
+            {
+                Cart cartDetail = cartDetails.ElementAt(i);
+                productList.Add(new UpdateProductQuantityDto() { Id = cartDetail.ProductId, Quantity = cartDetail.Quantity });
+            }
+
+            bool isProductUpdated = _apiService.UpdateProductByIds(productList, token);
+            if (!isProductUpdated)
+                return "failed";
             for (int i = 0; i < cartDetails.Count; i++)
             {
                 Cart cartDetail = cartDetails[i];
-                //update product detail
-               /* ProductDetail product = _productService.GetProductById(cartDetail.ProductId);
-                product.Quantity -= cartDetail.Quantity;
-                _productRepository.UpdateProduct(product);
-                _productRepository.Save();*/
                 //update card detail
                 cartDetail.OrderId = orderId;
                 cartDetail.IsActive = false;
                 _cartRepository.UpdateCartProduct(cartDetail);
                 _cartRepository.Save();
             }
-            return orderId;
+            return orderId.ToString();
         }
     }
 }

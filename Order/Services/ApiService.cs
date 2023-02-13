@@ -3,11 +3,16 @@ using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Order.Contracts.Services;
+using Order.Entities.Dtos;
 using Order.Entities.Models;
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Net.Http.Json;
+using System.Runtime.CompilerServices;
+using System.Threading.Tasks;
 
 namespace Order.Services
 {
@@ -20,31 +25,39 @@ namespace Order.Services
         }
 
 
-        public List<ProductDetail> GetProductByIds(List<Guid> productIds, string token)
+        public List<ResultProductDto> GetProductByIds(List<Guid> productIds, string token)
         {
-
             HttpClient client = new HttpClient();
             client.BaseAddress = new Uri(_configuration.GetConnectionString("base_url"));
             client.DefaultRequestHeaders.Add("Authorization", "Bearer " + token);
             HttpResponseMessage response = client.PostAsJsonAsync<List<Guid>>("api/product/getproducts", productIds).Result;
-            response.EnsureSuccessStatusCode();
-            if (response.IsSuccessStatusCode)
-                return response.Content.ReadFromJsonAsync<List<ProductDetail>>().Result;
+            if (response.StatusCode == HttpStatusCode.OK)
+                return response.Content.ReadFromJsonAsync<List<ResultProductDto>>().Result;
             else
-                return null;
+                return Enumerable.Empty<ResultProductDto>().ToList();
         }
 
-        public ProductDetail GetProductById(Guid productId, string token)
+        public ResultProductDto GetProductById(Guid productId, string token)
         {
             HttpClient client = new HttpClient();
             client.BaseAddress = new Uri(_configuration.GetConnectionString("base_url"));
             client.DefaultRequestHeaders.Add("Authorization", "Bearer " + token);
-            HttpResponseMessage response = client.PostAsJsonAsync<List<Guid>>("api/product/getproducts", productId).Result;
-            response.EnsureSuccessStatusCode();
-            if (response.IsSuccessStatusCode)
-                return response.Content.ReadFromJsonAsync<ProductDetail>().Result;
-            else
-                return null;
+
+            ResultProductDto response = client.GetFromJsonAsync<ResultProductDto>($"api/product/{productId}").Result;
+            return response;
         }
+
+        public bool UpdateProductByIds(List<UpdateProductQuantityDto> productDetails, string token)
+        {
+            HttpClient client = new HttpClient();
+            client.BaseAddress = new Uri(_configuration.GetConnectionString("base_url"));
+            client.DefaultRequestHeaders.Add("Authorization", "Bearer " + token);
+            HttpResponseMessage response = client.PutAsJsonAsync<List<UpdateProductQuantityDto>>("api/product/updateproducts", productDetails).Result;
+            if (response.StatusCode == HttpStatusCode.OK)
+                return true;
+            else
+                return false;
+        }
+
     }
 }

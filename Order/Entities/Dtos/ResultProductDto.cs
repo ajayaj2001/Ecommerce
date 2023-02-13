@@ -3,7 +3,7 @@
 
 namespace Order.Entities.Dtos
 {
-    public class ProductDto
+    public class ResultProductDto
     {
         ///<summary>
         ///unique id of field
@@ -24,11 +24,6 @@ namespace Order.Entities.Dtos
         /// product quantity
         ///</summary>
         public int Quantity { get; set; }
-
-        ///<summary>
-        /// product visibility
-        ///</summary>
-        public bool Visibility { get; set; }
 
         ///<summary>
         ///product category type

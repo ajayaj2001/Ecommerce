@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using Product.Entities.Models;
 using System.Linq;
 using AutoMapper;
+using Order.Entities.Dtos;
 
 namespace Product.Controllers
 {
@@ -142,7 +143,7 @@ namespace Product.Controllers
                 return NotFound(new ErrorResponse { errorCode = 404, errorMessage = "product not found", errorType = "get-product" });
             }
             _logger.LogInformation("Returned individual product ");
-            return Ok(_mapper.Map<ResultProductDto>(foundProduct));
+            return StatusCode(200,_mapper.Map<ResultProductDto>(foundProduct));
         }
 
         ///<summary> 
@@ -223,16 +224,39 @@ namespace Product.Controllers
         ///<response code = "404" >AddressBook not found</response>
         ///<response code="500">Internel server error</response>
         [Authorize]
-        [HttpGet("product/getproducts", Name = "GetProducts")]
+        [HttpPost("product/getproducts", Name = "GetProducts")]
         [SwaggerOperation(Summary = "Get Products" , Description = "To get an product details stored in the database")]
         [SwaggerResponse(200, "Success", typeof(ProductDetail))]
         [SwaggerResponse(401, "Unauthorized", typeof(ErrorResponse))]
         [SwaggerResponse(404, "Not Found", typeof(ErrorResponse))]
         [SwaggerResponse(500, "Internal server error", typeof(ErrorResponse))]
-        public IActionResult GetProductByIdsService(List<Guid> ids)
+        public IActionResult GetProductByIdsService([FromBody]List<Guid> ids)
         {
             _logger.LogInformation("Returned  product details ");
             return Ok(_productServices.GetProductByIds(ids));
+        }
+
+        ///<summary> 
+        ///Get product by ids
+        ///</summary>
+        ///<remarks>To get an product details stored in the database</remarks> 
+        ///<param name="id"></param> 
+        ///<response code = "200" >get address book based on userId returned successfully</response> 
+        ///<response code = "401" >Not an authorized user</response>
+        ///<response code = "404" >AddressBook not found</response>
+        ///<response code="500">Internel server error</response>
+        [Authorize]
+        [HttpPut("product/updateproducts", Name = "UpdateProducts")]
+        [SwaggerOperation(Summary = "update Products", Description = "To update an product details stored in the database")]
+        [SwaggerResponse(200, "Success", typeof(ProductDetail))]
+        [SwaggerResponse(401, "Unauthorized", typeof(ErrorResponse))]
+        [SwaggerResponse(404, "Not Found", typeof(ErrorResponse))]
+        [SwaggerResponse(500, "Internal server error", typeof(ErrorResponse))]
+        public IActionResult UpdateProductByIdsService([FromBody] List<UpdateProductQuantityDto> products)
+        {
+            _logger.LogInformation("Returned  product details ");
+            _productServices.UpdateProductList(products);
+            return Ok();
         }
     }
 }

@@ -1,4 +1,4 @@
-﻿using Product.Entities.Dtos;
+﻿using Order.Entities.Dtos;
 
 namespace Order.Entities.Dtos
 {

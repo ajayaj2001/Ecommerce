@@ -15,10 +15,6 @@ using Order.Controllers;
 using Order.DbContexts;
 using Order.Repositories;
 using Order.Services;
-using Product.Contracts.Repositories;
-using Product.Contracts.Services;
-using Product.Repositories;
-using Product.Services;
 using System;
 
 namespace Order

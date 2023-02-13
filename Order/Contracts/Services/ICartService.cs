@@ -18,7 +18,7 @@ namespace Order.Contracts.Services
         ///fetch cart in database
         ///</summary>
         ///param name="userId"></param>
-        List<ReturnCartDto> GetCartForUser(Guid userId);
+        List<ReturnCartDto> GetCartForUser(Guid userId,string token);
 
         ///<summary>
         ///check if wishlist name already added to datbase
@@ -52,6 +52,6 @@ namespace Order.Contracts.Services
         ///</summary>
         ///param name="cartDetails"></param>
         ///<param name="authId"></param>
-        Guid UpdateOrderIdToCart(List<Cart> cartDetails, Guid authId);
+        string UpdateOrderIdToCart(List<Cart> cartDetails, Guid authId,string token);
     }
 }

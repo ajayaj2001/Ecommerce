@@ -1,18 +1,18 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json.Linq;
 using Order.Contracts.Services;
 using Order.Entities.Dtos;
 using Order.Entities.Models;
 using Order.Entities.ResponseTypes;
 using Order.Services;
-using Product.Contracts.Services;
-using Product.Entities.Models;
 using Swashbuckle.AspNetCore.Annotations;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
+using System.Threading.Tasks;
 
 namespace Order.Controllers
 {
@@ -20,13 +20,13 @@ namespace Order.Controllers
     [Route("api")]
     public class CartController : Controller
     {
-       // private readonly IProductService _productService;
+       private readonly IApiService _apiService;
         private readonly ICartService _cartService;
         private readonly ILogger _logger;
 
-        public CartController(ILogger logger, ICartService cartService)//, IProductService productService)
+        public CartController(ILogger logger, ICartService cartService, IApiService apiService)
         {
-            //_productService = productService ?? throw new ArgumentNullException(nameof(productService));
+            _apiService = apiService ?? throw new ArgumentNullException(nameof(apiService));
             _cartService = cartService ?? throw new ArgumentNullException(nameof(cartService));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
@@ -51,16 +51,17 @@ namespace Order.Controllers
         public ActionResult<string> AddToCart([FromBody] CreateCartDto cartDetail)
         {
             Guid authId = Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
+            string token = HttpContext.Request.Headers["Authorization"].ToString().Replace("Bearer", "");
 
-           // ProductDetail product = _productService.GetProductById(cartDetail.ProductId);
-            /*if (product == null)
+            ResultProductDto product = _apiService.GetProductById(cartDetail.ProductId,token);
+            if (product == null)
                 return NotFound(new ErrorResponse { errorCode = 404, errorMessage = "product not found", errorType = "create-wishlist" });
 
             if (cartDetail.Quantity > product.Quantity)
             {
                 _logger.LogError("quantity exceed the limit");
                 return BadRequest("quantity exceed the limit");
-            }*/
+            }
 
             if (_cartService.checkProductExist(cartDetail.ProductId, authId))
             {
@@ -91,9 +92,9 @@ namespace Order.Controllers
         public IActionResult GetCart()
         {
             Guid authId = Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
-
+            string token = HttpContext.Request.Headers["Authorization"].ToString().Replace("Bearer", "");
             _logger.LogInformation("Returned wishlist based on name ");
-            return Ok(_cartService.GetCartForUser(authId));
+            return Ok(_cartService.GetCartForUser(authId,token));
         }
 
         ///<summary> 
@@ -118,19 +119,20 @@ namespace Order.Controllers
         public ActionResult<string> UpdateProduct([FromBody] CreateCartDto cartDetail)
         {
             Guid authId = Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
+            string token = HttpContext.Request.Headers["Authorization"].ToString().Replace("Bearer", "");
 
-            /*ProductDetail productFromRepo = _productService.GetProductById(cartDetail.ProductId);
-            if (productFromRepo == null)
+            ResultProductDto product = _apiService.GetProductById(cartDetail.ProductId, token);
+            if (product == null)
             {
                 _logger.LogError("Product not found");
                 return NotFound();
-            }*/
+            }
 
-            /*if (cartDetail.Quantity > productFromRepo.Quantity)
+            if (cartDetail.Quantity > product.Quantity)
             {
                 _logger.LogError("product out of stock in cart");
                 return BadRequest("cart product out of stock");
-            }*/
+            }
 
             if (!_cartService.checkProductExist(cartDetail.ProductId,authId))
             {
@@ -193,6 +195,7 @@ namespace Order.Controllers
         public IActionResult MoveToOrder()
         {
             Guid authId = Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
+            string token = HttpContext.Request.Headers["Authorization"].ToString().Replace("Bearer", "");
 
             List<Cart> cartDetails = _cartService.GetCartDetails(authId).ToList();
             if (cartDetails.Count()<=0)
@@ -201,7 +204,14 @@ namespace Order.Controllers
                 return NotFound("Cart is empty");
             }
             _logger.LogInformation("Returned wishlist based on name ");
-            return Ok(_cartService.UpdateOrderIdToCart(cartDetails,authId));
+            string result = _cartService.UpdateOrderIdToCart(cartDetails, authId, token);
+
+            if (result == "failed")
+            {
+                _logger.LogError("Product out of stock");
+                return NotFound("product out of stock");
+            }
+            return Ok(result);
         }
     }
 }

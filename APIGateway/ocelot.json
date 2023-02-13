@@ -82,7 +82,7 @@
       "DownstreamHostAndPorts": [
         {
           "Host": "localhost",
-          "Port": 3012
+          "Port": 3022
         }
       ],
       "DangerousAcceptAnyServerCertificateValidator": true
@@ -96,7 +96,7 @@
       "DownstreamHostAndPorts": [
         {
           "Host": "localhost",
-          "Port": 3012
+          "Port": 3022
         }
       ],
       "DangerousAcceptAnyServerCertificateValidator": true
@@ -110,7 +110,7 @@
       "DownstreamHostAndPorts": [
         {
           "Host": "localhost",
-          "Port": 3012
+          "Port": 3022
         }
       ],
       "DangerousAcceptAnyServerCertificateValidator": true
@@ -124,7 +124,7 @@
       "DownstreamHostAndPorts": [
         {
           "Host": "localhost",
-          "Port": 3012
+          "Port": 3022
         }
       ],
       "DangerousAcceptAnyServerCertificateValidator": true
@@ -138,7 +138,7 @@
       "DownstreamHostAndPorts": [
         {
           "Host": "localhost",
-          "Port": 3012
+          "Port": 3022
         }
       ],
       "DangerousAcceptAnyServerCertificateValidator": true
@@ -152,7 +152,7 @@
       "DownstreamHostAndPorts": [
         {
           "Host": "localhost",
-          "Port": 3012
+          "Port": 3022
         }
       ]
     },
@@ -161,6 +161,32 @@
       "UpstreamHttpMethod": [ "GET" ],
       "DownstreamPathTemplate": "/api/carttoorder",
       "DownstreamHttpMethod": [ "GET" ],
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 3022
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/api/product/getproducts",
+      "UpstreamHttpMethod": [ "POST" ],
+      "DownstreamPathTemplate": "/api/product/getproducts",
+      "DownstreamHttpMethod": [ "POST" ],
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 3012
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/api/product/updateproducts",
+      "UpstreamHttpMethod": [ "PUT" ],
+      "DownstreamPathTemplate": "/api/product/updateproducts",
+      "DownstreamHttpMethod": [ "PUT" ],
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {

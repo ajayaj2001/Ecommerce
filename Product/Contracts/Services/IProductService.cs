@@ -1,4 +1,5 @@
-﻿using Product.Entities.Dtos;
+﻿using Order.Entities.Dtos;
+using Product.Entities.Dtos;
 using Product.Entities.Models;
 using System;
 using System.Collections.Generic;
@@ -41,7 +42,7 @@ namespace Product.Contracts.Services
         ///get product by product id
         ///</summary>
         ///<param name="productIds"></param>
-        List<ProductDto> GetProductByIds(List<Guid> productIds);
+        List<ResultProductDto> GetProductByIds(List<Guid> productIds);
 
         ///<summary>
         ///delete product in database
@@ -57,5 +58,11 @@ namespace Product.Contracts.Services
         ///<param name="productInput"></param>
         ///param name="categoryId"></param>
         void UpdateProduct(UpdateProductDto productInput, ProductDetail productFromRepo, Guid authId, Guid categoryId);
+
+        ///<summary>
+        ///update address book details
+        ///</summary>
+        ///<param name="authId"></param>
+        void UpdateProductList(List<UpdateProductQuantityDto> products);
     }
 }

@@ -8,6 +8,7 @@ using Product.Contracts.Repositories;
 using Product.Helper;
 using System.Collections.Generic;
 using System.Linq;
+using Order.Entities.Dtos;
 
 namespace Product.Services
 {
@@ -98,15 +99,15 @@ namespace Product.Services
         ///get product by product id
         ///</summary>
         ///<param name="productIds"></param>
-        public List<ProductDto> GetProductByIds(List<Guid> productIds)
+        public List<ResultProductDto> GetProductByIds(List<Guid> productIds)
         {
-            List<ProductDto> productList = new List<ProductDto>();
+            List<ResultProductDto> productList = new List<ResultProductDto>();
             foreach (Guid id in productIds)
             {
                 ProductDetail product = _productRepository.GetProductById(id);
                 if (product != null)
                 {
-                    ProductDto fetchedProduct = _mapper.Map<ProductDto>(product);
+                    ResultProductDto fetchedProduct = _mapper.Map<ResultProductDto>(product);
                     fetchedProduct.Type = _categoryRepository.GetTypeById(product.CategoryId).Name;
                     productList.Add(fetchedProduct);
                 }
@@ -148,6 +149,28 @@ namespace Product.Services
             productFromRepo.UpdatedAt = DateTime.Now.ToString();
             productFromRepo.UpdatedBy = authId;
             _productRepository.UpdateProduct(productFromRepo);
+            _productRepository.Save();
+        }
+
+        ///<summary>
+        ///update address book details
+        ///</summary>
+        ///<param name="authId"></param>
+        ///<param name="productFromRepo"></param>
+        ///<param name="productInput"></param>
+        public void UpdateProductList(List<UpdateProductQuantityDto> products)
+        {
+            foreach (UpdateProductQuantityDto productDetail in products)
+            {
+                //update product detail
+                ProductDetail product = GetProductById(productDetail.Id);
+                if (product != null)
+                {
+                    product.Quantity -= productDetail.Quantity;
+                    _productRepository.UpdateProduct(product);
+                    _productRepository.Save();
+                }
+            }
             _productRepository.Save();
         }
     }

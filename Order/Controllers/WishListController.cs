@@ -8,6 +8,7 @@ using Swashbuckle.AspNetCore.Annotations;
 using System.Security.Claims;
 using System;
 using Order.Entities.ResponseTypes;
+using Order.Services;
 
 namespace Order.Controllers
 {
@@ -15,13 +16,13 @@ namespace Order.Controllers
     [Route("api")]
     public class WishListController : Controller
     {
-        //private readonly IProductService _productService;
+        private readonly IApiService _apiService;
         private readonly IWishListService _wishListService;
         private readonly ILogger _logger;
 
-        public WishListController(ILogger logger, IWishListService wishListService)//, IProductService productService)
+        public WishListController(ILogger logger, IWishListService wishListService, IApiService apiService)//, IProductService productService)
         {
-            //_productService = productService ?? throw new ArgumentNullException(nameof(productService));
+            _apiService = apiService ?? throw new ArgumentNullException(nameof(apiService));
             _wishListService = wishListService ?? throw new ArgumentNullException(nameof(wishListService));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
@@ -49,10 +50,13 @@ namespace Order.Controllers
             Guid authId = Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
             string token = HttpContext.Request.Headers["Authorization"].ToString().Replace("Bearer", "");
 
-            /* ProductDetail product = _productService.GetProductById(wishList.ProductId);
-             if (product == null)
-                 return NotFound(new ErrorResponse { errorCode = 404, errorMessage = "product not found", errorType = "create-wishlist" });
- */
+            ResultProductDto product = _apiService.GetProductById(wishList.ProductId, token);
+            if (product == null)
+            {
+                _logger.LogError("Product not found");
+                return NotFound();
+            }
+
             if (_wishListService.checkIfAlreadyExist(wishList, authId))
             {
                 _logger.LogInformation("wishlist with product already exist");
@@ -141,6 +145,7 @@ namespace Order.Controllers
         public IActionResult GetWishlistByName(string wishlistName)
         {
             Guid authId = Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
+            string token = HttpContext.Request.Headers["Authorization"].ToString().Replace("Bearer", "");
 
             if (!_wishListService.checkWishListExist(wishlistName, authId))
             {
@@ -149,7 +154,7 @@ namespace Order.Controllers
             }
 
             _logger.LogInformation("Returned wishlist based on name ");
-            return Ok(_wishListService.GetWishListByName(wishlistName, authId));
+            return Ok(_wishListService.GetWishListByName(wishlistName, authId,token));
         }
 
         ///<summary> 
@@ -202,11 +207,9 @@ namespace Order.Controllers
         public IActionResult GetWishlist()
         {
             Guid authId = Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
-
-
-
+            string token = HttpContext.Request.Headers["Authorization"].ToString().Replace("Bearer", "");
             _logger.LogInformation("Returned wishlist based on name ");
-            return Ok(_wishListService.GetWishListForUser(authId));
+            return Ok(_wishListService.GetWishListForUser(authId,token));
         }
 
     }
