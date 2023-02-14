@@ -62,34 +62,6 @@ namespace Customer.Services
         }
 
         ///<summary>
-        ///get all address book based on filter
-        ///</summary>
-        ///<param name="pageSortParam"></param>
-        //public List<User> GetAllCustomer(PageSortParam pageSortParam)
-        //{
-        //    IEnumerable<User> foundedUserList = _userRepository.GetAllUsers();
-        //    //PaginationHandler<User> list = new PaginationHandler<User>(pageSortParam);
-        //    //return list.GetData(foundedUserList);
-        //    return foundedUserList;
-        //}
-
-        ///<summary>
-        ///update address book in database
-        ///</summary>
-        ///<param name="users"></param>
-        /*public IEnumerable<UserDto> FetchCustomerDetail(List<User> users)
-        {
-            foreach (User user in users)
-            {
-                user.Emails = _userRepository.GetEmailIds(user.Id).ToList();
-                user.Addresses = _userRepository.GetAddressIds(user.Id).ToList();
-                user.Phones = _userRepository.GetPhoneIds(user.Id).ToList();
-                user.Assets = _userRepository.GetAssetIds(user.Id).ToList();
-            }
-            return _mapper.Map<IEnumerable<UserDto>>(users);
-        }*/
-
-        ///<summary>
         ///get single address book detais
         ///</summary>
         ///<param name="user"></param>
@@ -121,17 +93,6 @@ namespace Customer.Services
             userFromRepo.IsActive = false;
             _userRepository.Save();
         }
-
-        ///<summary>
-        ///convert user to userDto
-        ///</summary>
-        ///<param name="user"></param>
-        //public void UserToUserDto(Guid userId)
-        //{
-        //    User userFromRepo = _userRepository.GetUserById(userId);
-        //    userFromRepo.IsActive = false;
-        //    _userRepository.Save();
-        //}
 
         ///<summary>
         ///update address book details
@@ -206,13 +167,6 @@ namespace Customer.Services
         ///<param name="id"></param>
         public ValidateInputResponse ValidateUserInputUpdate(UpdateUserDto user, Guid id)
         {
-            //check username exist 
-            UserCredential userCredientials = _userRepository.GetUserCredentialByUserNameUpdate(user.Credentials.UserName, id);
-            if (userCredientials != null)
-            {
-                _logger.LogError("user name already exist");
-                return new ValidateInputResponse() { errorMessage = "user name already exist", errorCode = 409 };
-            }
             //check email 
             if (_userRepository.IsEmailExistUpdate(user.EmailAddress, id))
             {

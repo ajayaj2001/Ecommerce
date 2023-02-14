@@ -76,7 +76,7 @@ namespace Order.Controllers
         ///<response code = "404" >AddressBook not found</response>
         ///<response code="500">Internel server error</response>
         [Authorize]
-        [HttpDelete("cart/{wishlistName}")]
+        [HttpDelete("wishlist/{wishlistName}")]
         [SwaggerOperation(Summary = "Delete wishlist", Description = "To delete an wishlist from database")]
         [SwaggerResponse(200, "Success", typeof(string))]
         [SwaggerResponse(401, "Unauthorized", typeof(ErrorResponse))]

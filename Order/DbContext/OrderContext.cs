@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System;
 using Order.Entities.Models;
+using System.IO;
 
 namespace Order.DbContexts
 {
@@ -14,22 +15,41 @@ namespace Order.DbContexts
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            Guid categoryId = Guid.Parse("5bfdfa9f-ffa2-4c31-40de-08db05cf4622");
-            Guid productId = Guid.Parse("5bfdfa9f-ffa2-4c31-40de-08db05cf468e");
-            Guid userId = Guid.Parse("5bfdfa9f-ffa2-4c31-40de-08db05cf468e");
+            string baseDir = AppDomain.CurrentDomain.BaseDirectory;
+            string wishlistPath = Path.Combine(baseDir, @"..\..\..\DbContext\data\Wishlist.csv");
+            string[] wishlistValues = File.ReadAllText(Path.GetFullPath(wishlistPath)).Split('\n');
 
-            WishList wishList = new WishList()
+            foreach (string item in wishlistValues)
             {
-                Id = categoryId,
-                Name = "Personal",
-                ProductId = productId,
-                UserId = userId,
-            };
+                if (!string.IsNullOrEmpty(item))
+                {
+                    string[] row = item.Split(",");
+                    {
+                        WishList wishList = new WishList()
+                        {
+                            Id = Guid.Parse(row[0]),
+                            Name = row[1],
+                            ProductId =Guid.Parse(row[2]),
+                            UserId = Guid.Parse(row[3]),
+                        };
+                        modelBuilder.Entity<WishList>().HasData(wishList);
+                    }
+                }
+            }
+            string cartPath = Path.Combine(baseDir, @"..\..\..\DbContext\data\Cart.csv");
+            string[] carttValues = File.ReadAllText(Path.GetFullPath(cartPath)).Split('\n');
 
-            Cart cart = new Cart() { Id = categoryId, Quantity = 2, ProductId = productId, UserId = userId };
-
-            modelBuilder.Entity<WishList>().HasData(wishList);
-            modelBuilder.Entity<Cart>().HasData(cart);
+            foreach (string item in carttValues)
+            {
+                if (!string.IsNullOrEmpty(item))
+                {
+                    string[] row = item.Split(",");
+                    {
+                        Cart cart = new Cart() { Id = Guid.Parse(row[0]), Quantity = int.Parse(row[1]), ProductId = Guid.Parse(row[2]), UserId = Guid.Parse(row[3]) };
+                        modelBuilder.Entity<Cart>().HasData(cart);
+                    }
+                }
+            }
 
             base.OnModelCreating(modelBuilder);
         }

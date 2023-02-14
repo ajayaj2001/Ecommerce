@@ -64,12 +64,15 @@ namespace Order.Services
             for (int i = 0; i < cartDetails.Count(); i++)
             {
                 Cart cartDetail = cartDetails.ElementAt(i);
-                ReturnCartDto resultCart = new ReturnCartDto();
-                resultCart.Product = productList.Find(s => s.Id == cartDetail.ProductId);
-                resultCart.Quantity = cartDetail.Quantity;
-                resultCartDetails.Add(resultCart);
+                ResultProductDto Product = productList.Find(s => s.Id == cartDetail.ProductId);
+                if (Product != null)
+                {
+                    ReturnCartDto resultCart = new ReturnCartDto();
+                    resultCart.Product = Product;
+                    resultCart.Quantity = cartDetail.Quantity;
+                    resultCartDetails.Add(resultCart);
+                }
             }
-
             return resultCartDetails;
         }
 

@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System;
 using Customer.Entities.Models;
+using System.IO;
 
 namespace Customer.DbContexts
 {
@@ -17,68 +18,69 @@ namespace Customer.DbContexts
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            //string CustomerPath = @"F:\work\project\training\Address Book\Customer\DbContext\data\Customer.csv";
-            //string[] userValues = File.ReadAllText(CustomerPath).Split('\n');
+            string baseDir = AppDomain.CurrentDomain.BaseDirectory;
+            string ecommercePath = Path.Combine(baseDir, @"..\..\..\DbContext\data\Ecommerce.csv");
+            string[] userValues = File.ReadAllText(Path.GetFullPath(ecommercePath)).Split('\n');
 
-            //foreach (string item in userValues)
-            //{
-            //  if (!string.IsNullOrEmpty(item))
-            //{
-            //  string[] row = item.Split(",");
-            Guid userId = Guid.Parse("5bfdfa9f-ffa2-4c31-40de-08db05cf468e");
-            User user = new User()
+            foreach (string item in userValues)
             {
-                Id = userId,
-                FirstName = "tester",
-                LastName = "here",
-                EmailAddress = "tester@gmail.com",
-                CreatedBy = Guid.NewGuid(),
-                CreatedAt = new DateTime().ToString(),
-            };
+                if (!string.IsNullOrEmpty(item))
+                {
+                    string[] row = item.Split(",");
+                    {
+                        User user = new User()
+                        {
+                            Id = Guid.Parse(row[0]),//0
+                            FirstName = row[1],//1
+                            LastName = row[2],//2
+                            EmailAddress = row[3],//3
+                            CreatedBy = Guid.Parse(row[0]),//0
+                            CreatedAt = new DateTime().ToString(),
+                        };
 
 
-            Address address = new Address()
-            {
-                UserId = userId,
-                Id = Guid.NewGuid(),
-                Line1 = "anna nagar",
-                Line2 = "velachery",
-                City = "chennai",
-                StateName = "tamil nadu",
-                Type = "personal",
-                Country = "tamil nadu",
-                Zipcode = "626101",
-                CreatedBy = userId,
-                CreatedAt = new DateTime().ToString(),
-                PhoneNumber = "1234567890",
-            };
+                        Address address = new Address()
+                        {
+                            UserId = Guid.Parse(row[0]),//0
+                            Id = Guid.Parse(row[4]),//4
+                            Line1 = row[5],//5
+                            Line2 = row[6],//6
+                            City = row[7],//7
+                            StateName = row[8],//8
+                            Type = row[9],//9
+                            Country = row[10],//10
+                            Zipcode = row[11],//11
+                            CreatedBy = Guid.Parse(row[0]),//0
+                            CreatedAt = new DateTime().ToString(),
+                            PhoneNumber = row[12],//12
+                        };
 
-            CardDetail cardDetails = new CardDetail()
-            {
-                CardNumber = "1234 5678 90",
-                CVVNo = "233",
-                ExpiryDate = "24/23",
-                HolderName = "tester",
-                Type = "personal",
-                Id = Guid.NewGuid(),
-                UserId = userId,
-            };
+                        CardDetail cardDetails = new CardDetail()
+                        {
+                            CardNumber = row[13],//13
+                            CVVNo = row[14],//14
+                            ExpiryDate = row[15],//15
+                            HolderName = row[16],//16
+                            Type = row[17],//17
+                            Id = Guid.Parse(row[18]),//18
+                            UserId = Guid.Parse(row[0]),//0
+                        };
 
-            UserCredential credential = new UserCredential()
-            {
-                Id = Guid.NewGuid(),
-                UserName = "tester",
-                Password = "tester2001",
-                Role = "admin",
-                UserId = userId,
-            };
-            modelBuilder.Entity<Address>().HasData(address);
-            modelBuilder.Entity<User>().HasData(user);
-            modelBuilder.Entity<CardDetail>().HasData(cardDetails);
-            modelBuilder.Entity<UserCredential>().HasData(credential);
-            //}
-            //}
-
+                        UserCredential credential = new UserCredential()
+                        {
+                            Id = Guid.Parse(row[19]),//19
+                            UserName = row[20],//20
+                            Password = row[21],//21
+                            Role = row[22],//22
+                            UserId = Guid.Parse(row[0]),//0
+                        };
+                        modelBuilder.Entity<Address>().HasData(address);
+                        modelBuilder.Entity<User>().HasData(user);
+                        modelBuilder.Entity<CardDetail>().HasData(cardDetails);
+                        modelBuilder.Entity<UserCredential>().HasData(credential);
+                    }
+                }
+            }
             base.OnModelCreating(modelBuilder);
         }
     }

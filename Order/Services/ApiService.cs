@@ -4,15 +4,12 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Order.Contracts.Services;
 using Order.Entities.Dtos;
-using Order.Entities.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Json;
-using System.Runtime.CompilerServices;
-using System.Threading.Tasks;
 
 namespace Order.Services
 {
@@ -44,6 +41,7 @@ namespace Order.Services
             client.DefaultRequestHeaders.Add("Authorization", "Bearer " + token);
 
             ResultProductDto response = client.GetFromJsonAsync<ResultProductDto>($"api/product/{productId}").Result;
+
             return response;
         }
 

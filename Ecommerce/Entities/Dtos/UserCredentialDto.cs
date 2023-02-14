@@ -14,16 +14,16 @@ namespace Customer.Entities.Dtos
         ///<summary>
         ///password user
         ///</summary>
-        public string Password { get; set; }
+        //public string Password { get; set; }
 
         ///<summary>
         ///user role
         ///</summary>
-        public string Role { get; set; }
+        //public string Role { get; set; }
 
         ///<summary>
         ///user id of who created address
         ///</summary>
-        public Guid UserId { get; set; }
+        //public Guid UserId { get; set; }
     }
 }

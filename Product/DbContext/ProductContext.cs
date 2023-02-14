@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System;
 using Product.Entities.Models;
+using System.IO;
 
 namespace Product.DbContexts
 {
@@ -15,31 +16,50 @@ namespace Product.DbContexts
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            Guid categoryId = Guid.Parse("5bfdfa9f-ffa2-4c31-40de-08db05cf4622");
-            Guid productId = Guid.Parse("5bfdfa9f-ffa2-4c31-40de-08db05cf468e");
-            Guid userId = Guid.Parse("5bfdfa9f-ffa2-4c31-40de-08db05cf468e");
+            string baseDir = AppDomain.CurrentDomain.BaseDirectory;
+            string productPath = Path.Combine(baseDir, @"..\..\..\DbContext\data\Product.csv");
+            string[] productValues = File.ReadAllText(Path.GetFullPath(productPath)).Split('\n');
 
-
-            ProductDetail product = new ProductDetail()
+            foreach (string item in productValues)
             {
-                Id = productId,
-                Name = "Orange",
-                Description = " fresh orange fruit",
-                Quantity = 20,
-                Visibility = true,
-                CategoryId = categoryId,
-            };
+                if (!string.IsNullOrEmpty(item))
+                {
+                    string[] row = item.Split(",");
+                    {
 
-            Category category = new Category()
+                        ProductDetail product = new ProductDetail()
+                        {
+                            Id = Guid.Parse(row[0]),
+                            Name = row[1],
+                            Description = row[2],
+                            Quantity = int.Parse(row[3]),
+                            Visibility = bool.Parse(row[4]),
+                            CategoryId = Guid.Parse(row[5]),
+                        };
+                        modelBuilder.Entity<ProductDetail>().HasData(product);
+                    }
+                }
+            }
+            string categoryPath = Path.Combine(baseDir, @"..\..\..\DbContext\data\Category.csv");
+            string[] categoryValues = File.ReadAllText(Path.GetFullPath(categoryPath)).Split('\n');
+
+            foreach (string item in categoryValues)
             {
-                Id = categoryId,
-                Name = "Fruit",
-                Description = "fruit category",
-            };
+                if (!string.IsNullOrEmpty(item))
+                {
+                    string[] row = item.Split(",");
+                    {
+                        Category category = new Category()
+                        {
+                            Id = Guid.Parse(row[0]),
+                            Name = row[1],
+                            Description = row[3],
+                        };
 
-            modelBuilder.Entity<Category>().HasData(category);
-            modelBuilder.Entity<ProductDetail>().HasData(product);
-
+                        modelBuilder.Entity<Category>().HasData(category);
+                    }
+                }
+            }
             base.OnModelCreating(modelBuilder);
         }
     }
