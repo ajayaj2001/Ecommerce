@@ -16,7 +16,8 @@ namespace Order.Contracts.Services
         ///<summary>
         ///check if product already added to datbase
         ///</summary>
-        ///<param name="user"></param>
+        ///<param name="userId"></param>
+        ///<param name="wishList"></param>
         bool checkIfAlreadyExist(CreateWishListDto wishList, Guid userId);
 
         ///<summary>
@@ -30,34 +31,36 @@ namespace Order.Contracts.Services
         ///delete wishlist in database
         ///</summary>
         ///<param name="wishlistName"></param>
-        ///param name="authId"></param>
+        ///<param name="authId"></param>
          void DeleteWishlistByName(string wishlistName, Guid authId);
 
         ///<summary>
         ///delete wishlist product in database
         ///</summary>
         ///<param name="wishlistName"></param>
-        ///param name="authId"></param>
+        ///<param name="authId"></param>
         void DeleteWishlistProduct(CreateWishListDto wishlistName, Guid authId);
 
         ///<summary>
-        ///fetch wishlist in database
+        ///fetch wishlist by wishlist name in database
         ///</summary>
         ///<param name="wishlistName"></param>
-        ///param name="authId"></param>
+        ///<param name="authId"></param>
+        ///<param name="token"></param>
         FetchWishListDto GetWishListByName(string wishlistName, Guid authId, string token);
 
         ///<summary>
-        ///fetch wishlist in database
+        ///fetch wishlist for user in database
         ///</summary>
-        ///param name="userId"></param>
+        ///<param name="userId"></param>
+        ///<param name="token"></param>
         List<FetchWishListDto> GetWishListForUser(Guid userId, string token);
 
         ///<summary>
-        ///fetch wishlist in database
+        ///move wishlist to cart
         ///</summary>
         ///<param name="wishlistName"></param>
-        ///param name="authId"></param>
+        ///<param name="authId"></param>
         void MoveWishListToCart(string wishlistName, Guid authId);
     }
 }

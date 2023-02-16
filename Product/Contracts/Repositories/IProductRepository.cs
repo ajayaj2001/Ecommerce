@@ -9,9 +9,9 @@ namespace Product.Contracts.Repositories
     {
 
         ///<summary>
-        ///to create user in db
+        ///to create product in db
         ///</summary>
-        ///<param name="user"></param>
+        ///<param name="product"></param>
         // user operation
         void CreateProduct(ProductDetail product);
 

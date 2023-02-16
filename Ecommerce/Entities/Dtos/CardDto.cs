@@ -18,25 +18,25 @@ namespace Customer.Entities.Dtos
         public string HolderName { get; set; }
 
         ///<summary>
-        /// card holder name 
+        /// card numer 
         ///</summary>
         [JsonProperty(PropertyName = "card_number")]
         public string CardNumber { get; set; }
 
         ///<summary>
-        /// card holder name 
-        ///</summary>
+        /// card expiry date
+        /// ///</summary>
         [JsonProperty(PropertyName = "expiry_date")]
         public string ExpiryDate { get; set; }
 
         ///<summary>
-        /// card holder name 
+        /// card cvv number 
         ///</summary>
         [JsonProperty(PropertyName = "cvv_number")]
         public string CVVNo { get; set; }
 
         ///<summary>
-        /// payment type 
+        /// card type 
         ///</summary>
         public string Type { get; set; }
     }

@@ -8,7 +8,6 @@ using Swashbuckle.AspNetCore.Annotations;
 using System.Security.Claims;
 using System;
 using Order.Entities.ResponseTypes;
-using Order.Services;
 
 namespace Order.Controllers
 {
@@ -28,18 +27,18 @@ namespace Order.Controllers
         }
 
         ///<summary> 
-        ///Create Address Book 
+        ///Create wishlist
         ///</summary>
-        ///<remarks>To create address book with first name, last name and their communication details</remarks> 
-        ///<param name="user"></param> 
-        ///<response code = "200" >Id of created address book returned successfully</response> 
+        ///<remarks>To create wishlist</remarks> 
+        ///<param name="wishList"></param> 
+        ///<response code = "200" >Id of created wishlist returned successfully</response> 
         ///<response code = "401" >Not an authorized user</response>
-        ///<response code = "409" >The user input is not valid</response>
-        ///<response code = "404" >MetaData type not found</response>
+        ///<response code = "409" >wish list already exist</response>
+        ///<response code = "404" >product not found</response>
         ///<response code="500">Internel server error</response>
         [Authorize]
         [HttpPost("wishlist")]
-        [SwaggerOperation(Summary = "Create Address Book", Description = "To create address book with first name, last name and their communication details")]
+        [SwaggerOperation(Summary = "Create Wishlist", Description = "To create wishlist with product")]
         [SwaggerResponse(200, "Created", typeof(CreatedSuccessResponse))]
         [SwaggerResponse(401, "Unauthorized", typeof(ErrorResponse))]
         [SwaggerResponse(409, "Conflict", typeof(ErrorResponse))]
@@ -54,9 +53,8 @@ namespace Order.Controllers
             if (product == null)
             {
                 _logger.LogError("Product not found");
-                return NotFound();
+                return NotFound(new ErrorResponse { errorCode = 404, errorMessage = "wishlist product not found", errorType = "create-wishlist" });
             }
-
             if (_wishListService.checkIfAlreadyExist(wishList, authId))
             {
                 _logger.LogInformation("wishlist with product already exist");
@@ -67,13 +65,13 @@ namespace Order.Controllers
         }
 
         ///<summary> 
-        ///Delete wishlist by userName
+        ///Delete wishlist by wishlist name
         ///</summary>
-        ///<remarks>To delete an address book frpm database</remarks> 
+        ///<remarks>To delete an wishlist by wishlist name</remarks> 
         ///<param name="wishlistName"></param> 
-        ///<response code = "200" >address book delted successfully</response> 
+        ///<response code = "200" >wishlist deleted successfully</response> 
         ///<response code = "401" >Not an authorized user</response>
-        ///<response code = "404" >AddressBook not found</response>
+        ///<response code = "404" >wishlist not found</response>
         ///<response code="500">Internel server error</response>
         [Authorize]
         [HttpDelete("wishlist/{wishlistName}")]
@@ -97,17 +95,17 @@ namespace Order.Controllers
         }
 
         ///<summary> 
-        ///Delete wishlist by userName
+        ///Delete wishlist for user
         ///</summary>
-        ///<remarks>To delete an address book frpm database</remarks> 
+        ///<remarks>To delete wishlist for user</remarks> 
         ///<param name="id"></param> 
-        ///<response code = "200" >address book delted successfully</response> 
+        ///<response code = "200" >wishlist delted successfully</response> 
         ///<response code = "401" >Not an authorized user</response>
-        ///<response code = "404" >AddressBook not found</response>
+        ///<response code = "404" >wishlist not found</response>
         ///<response code="500">Internel server error</response>
         [Authorize]
         [HttpDelete("wishlist")]
-        [SwaggerOperation(Summary = "Delete wishlist product", Description = "To delete an wishlist product from database")]
+        [SwaggerOperation(Summary = "Delete wishlist", Description = "To delete an wishlist from database")]
         [SwaggerResponse(200, "Success", typeof(string))]
         [SwaggerResponse(401, "Unauthorized", typeof(ErrorResponse))]
         [SwaggerResponse(404, "Not Found", typeof(ErrorResponse))]
@@ -115,11 +113,10 @@ namespace Order.Controllers
         public IActionResult DeleteWishlistProduct([FromBody] CreateWishListDto wishList)
         {
             Guid authId = Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
-
             if (!_wishListService.checkIfAlreadyExist(wishList, authId))
             {
                 _logger.LogInformation("Product not exist in wishlist");
-                return NotFound(new ErrorResponse { errorCode = 404, errorMessage = "wish list with product not found", errorType = "create-wishlist" });
+                return NotFound(new ErrorResponse { errorCode = 404, errorMessage = "wish list with product not found", errorType = "delete-all-wishlist" });
             }
             _wishListService.DeleteWishlistProduct(wishList, authId);
             _logger.LogInformation("wish list product deleted");
@@ -131,9 +128,9 @@ namespace Order.Controllers
         ///</summary>
         ///<remarks>To get an wishlist details stored in the database</remarks> 
         ///<param name="wishlistName"></param> 
-        ///<response code = "200" >get address book based on userId returned successfully</response> 
+        ///<response code = "200" >get wishlist detail based on wishslist name returned successfully</response> 
         ///<response code = "401" >Not an authorized user</response>
-        ///<response code = "404" >AddressBook not found</response>
+        ///<response code = "404" >wishlist not found</response>
         ///<response code="500">Internel server error</response>
         [Authorize]
         [HttpGet("wishlist/{wishlistName}")]
@@ -162,13 +159,13 @@ namespace Order.Controllers
         ///</summary>
         ///<remarks>To move wishlist to cart</remarks> 
         ///<param name="wishlistName"></param> 
-        ///<response code = "200" >get address book based on userId returned successfully</response> 
+        ///<response code = "200" >moved wishlist to cart successfully</response> 
         ///<response code = "401" >Not an authorized user</response>
-        ///<response code = "404" >AddressBook not found</response>
+        ///<response code = "404" >wishlist not found</response>
         ///<response code="500">Internel server error</response>
         [Authorize]
         [HttpGet("wishlisttocart/{wishlistName}")]
-        [SwaggerOperation(Summary = "Get wishlist", Description = "To get an wishlist details stored in the database")]
+        [SwaggerOperation(Summary = "Get wishlist", Description = "To move wishlist products to cart")]
         [SwaggerResponse(200, "Success", typeof(WishList))]
         [SwaggerResponse(401, "Unauthorized", typeof(ErrorResponse))]
         [SwaggerResponse(404, "Not Found", typeof(ErrorResponse))]
@@ -182,7 +179,6 @@ namespace Order.Controllers
                 _logger.LogError("wishlist not found");
                 return NotFound(new ErrorResponse { errorCode = 404, errorMessage = "wishlist not found", errorType = "delete-wishlist" });
             }
-
             _logger.LogInformation("successfully moved");
             _wishListService.MoveWishListToCart(wishlistName, authId);
             return Ok("successfully moved");
@@ -192,10 +188,9 @@ namespace Order.Controllers
         ///Get Wishlist 
         ///</summary>
         ///<remarks>To get an wishlist details stored in the database</remarks> 
-        ///<param name="wishlistName"></param> 
-        ///<response code = "200" >get address book based on userId returned successfully</response> 
+        ///<response code = "200" >get wishlist based on userId returned successfully</response> 
         ///<response code = "401" >Not an authorized user</response>
-        ///<response code = "404" >AddressBook not found</response>
+        ///<response code = "404" >wishlist not found</response>
         ///<response code="500">Internel server error</response>
         [Authorize]
         [HttpGet("wishlist")]

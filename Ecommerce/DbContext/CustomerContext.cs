@@ -30,49 +30,49 @@ namespace Customer.DbContexts
                     {
                         User user = new User()
                         {
-                            Id = Guid.Parse(row[0]),//0
-                            FirstName = row[1],//1
-                            LastName = row[2],//2
-                            EmailAddress = row[3],//3
-                            CreatedBy = Guid.Parse(row[0]),//0
+                            Id = Guid.Parse(row[0]),
+                            FirstName = row[1],
+                            LastName = row[2],
+                            EmailAddress = row[3],
+                            CreatedBy = Guid.Parse(row[0]),
                             CreatedAt = new DateTime().ToString(),
                         };
 
 
                         Address address = new Address()
                         {
-                            UserId = Guid.Parse(row[0]),//0
-                            Id = Guid.Parse(row[4]),//4
-                            Line1 = row[5],//5
-                            Line2 = row[6],//6
-                            City = row[7],//7
-                            StateName = row[8],//8
-                            Type = row[9],//9
-                            Country = row[10],//10
-                            Zipcode = row[11],//11
-                            CreatedBy = Guid.Parse(row[0]),//0
+                            UserId = Guid.Parse(row[0]),
+                            Id = Guid.Parse(row[4]),
+                            Line1 = row[5],
+                            Line2 = row[6],
+                            City = row[7],
+                            StateName = row[8],
+                            Type = row[9],
+                            Country = row[10],
+                            Zipcode = row[11],
+                            CreatedBy = Guid.Parse(row[0]),
                             CreatedAt = new DateTime().ToString(),
-                            PhoneNumber = row[12],//12
+                            PhoneNumber = row[12],
                         };
 
                         CardDetail cardDetails = new CardDetail()
                         {
-                            CardNumber = row[13],//13
-                            CVVNo = row[14],//14
-                            ExpiryDate = row[15],//15
-                            HolderName = row[16],//16
-                            Type = row[17],//17
-                            Id = Guid.Parse(row[18]),//18
-                            UserId = Guid.Parse(row[0]),//0
+                            CardNumber = row[13],
+                            CVVNo = row[14],
+                            ExpiryDate = row[15],
+                            HolderName = row[16],
+                            Type = row[17],
+                            Id = Guid.Parse(row[18]),
+                            UserId = Guid.Parse(row[0]),
                         };
 
                         UserCredential credential = new UserCredential()
                         {
-                            Id = Guid.Parse(row[19]),//19
-                            UserName = row[20],//20
-                            Password = row[21],//21
-                            Role = row[22],//22
-                            UserId = Guid.Parse(row[0]),//0
+                            Id = Guid.Parse(row[19]),
+                            UserName = row[20],
+                            Password = row[21],
+                            Role = row[22],
+                            UserId = Guid.Parse(row[0]),
                         };
                         modelBuilder.Entity<Address>().HasData(address);
                         modelBuilder.Entity<User>().HasData(user);

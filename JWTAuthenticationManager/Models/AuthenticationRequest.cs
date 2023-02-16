@@ -15,14 +15,14 @@ namespace JWTAuthenticationManager.Models
         public Guid Id { get; set; }
 
         ///<summary>
-        ///user name of user
+        ///user name 
         ///</summary>
         [JsonProperty(PropertyName = "user_name")]
         [Required]
         public string UserName { get; set; }
 
         ///<summary>
-        ///password user
+        ///password 
         ///</summary>
         [Required]
         public string Password { get; set; }

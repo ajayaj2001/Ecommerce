@@ -25,10 +25,10 @@ namespace Order.Repositories
             _context.Carts.Add(cart);
         }
 
-        //<summary>
+        ///<summary>
         ///get cart for user
         ///</summary>
-        ///param name="authId"></param>
+        ///<param name="authId"></param>
         public IEnumerable<Cart> GetCartDetailsForUser(Guid authId)
         {
             return _context.Carts.Where(x => x.UserId == authId && x.IsActive);

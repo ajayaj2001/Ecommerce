@@ -12,17 +12,17 @@ namespace Customer.Entities.Models
         public string HolderName { get; set; }
 
         ///<summary>
-        /// card holder name 
+        /// card number 
         ///</summary>
         public string CardNumber { get; set; }
 
         ///<summary>
-        /// card holder name 
+        /// card expiry date
         ///</summary>
         public string ExpiryDate { get; set; }
 
         ///<summary>
-        /// card holder name 
+        /// card cvv number 
         ///</summary>
         public string CVVNo { get; set; }
 

@@ -41,7 +41,7 @@ namespace Customer.Entities.Dtos
         public ICollection<CreateAddressDto> Addresses { get; set; } = new List<CreateAddressDto>();
 
         ///<summary>
-        ///phone dettails list of user 
+        ///phone details list of user 
         ///</summary>
         [JsonProperty(PropertyName = "card_details")]
         public ICollection<CreateCardDto> CardDetails { get; set; } = new List<CreateCardDto>();

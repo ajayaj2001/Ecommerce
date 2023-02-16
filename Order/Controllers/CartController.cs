@@ -1,18 +1,15 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json.Linq;
 using Order.Contracts.Services;
 using Order.Entities.Dtos;
 using Order.Entities.Models;
 using Order.Entities.ResponseTypes;
-using Order.Services;
 using Swashbuckle.AspNetCore.Annotations;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
-using System.Threading.Tasks;
 
 namespace Order.Controllers
 {
@@ -34,12 +31,12 @@ namespace Order.Controllers
         ///<summary> 
         ///add product to cart 
         ///</summary>
-        ///<remarks>To create address book with first name, last name and their communication details</remarks> 
-        ///<param name="user"></param> 
-        ///<response code = "200" >Id of created address book returned successfully</response> 
+        ///<remarks>To create cart and add product to it</remarks> 
+        ///<param name="cartDetail"></param> 
+        ///<response code = "200" >Id of created cart returned successfully</response> 
         ///<response code = "401" >Not an authorized user</response>
-        ///<response code = "409" >The user input is not valid</response>
-        ///<response code = "404" >MetaData type not found</response>
+        ///<response code = "409" >cart details is not valid</response>
+        ///<response code = "404" >product not found</response>
         ///<response code="500">Internel server error</response>
         [Authorize]
         [HttpPost("cart")]
@@ -55,20 +52,19 @@ namespace Order.Controllers
 
             ResultProductDto product = _apiService.GetProductById(cartDetail.ProductId,token);
             if (product == null)
-                return NotFound(new ErrorResponse { errorCode = 404, errorMessage = "product not found", errorType = "create-wishlist" });
-
+            {
+                _logger.LogError("product not found");
+                return NotFound(new ErrorResponse { errorCode = 404, errorMessage = "product not found", errorType = "add to  cart" }); }
             if (cartDetail.Quantity > product.Quantity)
             {
                 _logger.LogError("quantity exceed the limit");
-                return BadRequest("quantity exceed the limit");
+                return BadRequest(new ErrorResponse { errorCode = 400, errorMessage = "product quantity exceed", errorType = "add to  cart" });
             }
-
             if (_cartService.checkProductExist(cartDetail.ProductId, authId))
             {
-                _logger.LogError("product not found");
-                return Conflict(new ErrorResponse { errorCode = 409, errorMessage = "product already exist", errorType = "add-cart" });
+                _logger.LogError("product already exist");
+                return Conflict(new ErrorResponse { errorCode = 409, errorMessage = "product already exist", errorType = "add to cart" });
             }
-
             _logger.LogInformation("product added to cart successfully");
             return Ok(_cartService.AddToCart(cartDetail, authId));
         }
@@ -77,15 +73,13 @@ namespace Order.Controllers
         ///Get cart 
         ///</summary>
         ///<remarks>To get an cart details stored in the database</remarks> 
-        ///<param name="wishlistName"></param> 
-        ///<response code = "200" >get cart based on userId returned successfully</response> 
+        ///<response code = "200" >get cart under user returned successfully</response> 
         ///<response code = "401" >Not an authorized user</response>
-        ///<response code = "404" >AddressBook not found</response>
         ///<response code="500">Internel server error</response>
         [Authorize]
         [HttpGet("cart")]
         [SwaggerOperation(Summary = "Get cart", Description = "To get an cart details stored in the database")]
-        [SwaggerResponse(200, "Success", typeof(WishList))]
+        [SwaggerResponse(200, "Success", typeof(List<ReturnCartDto>))]
         [SwaggerResponse(401, "Unauthorized", typeof(ErrorResponse))]
         [SwaggerResponse(404, "Not Found", typeof(ErrorResponse))]
         [SwaggerResponse(500, "Internal server error", typeof(ErrorResponse))]
@@ -93,20 +87,21 @@ namespace Order.Controllers
         {
             Guid authId = Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
             string token = HttpContext.Request.Headers["Authorization"].ToString().Replace("Bearer", "");
-            _logger.LogInformation("Returned wishlist based on name ");
+            _logger.LogInformation("Returned cart under user");
             return Ok(_cartService.GetCartForUser(authId,token));
         }
 
         ///<summary> 
         ///Update cart product
         ///</summary>
-        ///<remarks>To update the existing address book details like first name etc</remarks> 
+        ///<remarks>To update the cart product quantity</remarks> 
         ///<param name=""></param> 
         ///<param name="id"></param>
-        ///<response code = "200" >Address book updated successfully</response> 
+        ///<response code = "200" >cart updated successfully</response> 
         ///<response code = "401" >Not an authorized user</response>
-        ///<response code = "409" >The user input is not valid</response>
-        ///<response code = "404" >AddressBook not found</response>
+        ///<response code="400">Invaild product detail</response>
+        ///<response code = "409" >cart detail invalid</response>
+        ///<response code = "404" >product not found</response>
         ///<response code="500">Internel server error</response>
         [Authorize]
         [HttpPut("cart")]
@@ -114,6 +109,7 @@ namespace Order.Controllers
         [SwaggerResponse(200, "Success", typeof(string))]
         [SwaggerResponse(401, "Unauthorized", typeof(ErrorResponse))]
         [SwaggerResponse(404, "Not Found", typeof(ErrorResponse))]
+        [SwaggerResponse(400, "Bad Request", typeof(ErrorResponse))]
         [SwaggerResponse(409, "Conflict", typeof(ErrorResponse))]
         [SwaggerResponse(500, "Internal server error", typeof(ErrorResponse))]
         public ActionResult<string> UpdateProduct([FromBody] CreateCartDto cartDetail)
@@ -125,19 +121,19 @@ namespace Order.Controllers
             if (product == null)
             {
                 _logger.LogError("Product not found");
-                return NotFound();
+                return NotFound(new ErrorResponse { errorCode = 404, errorMessage = "product not found", errorType = "get-cart-id" });
             }
 
             if (cartDetail.Quantity > product.Quantity)
             {
                 _logger.LogError("product out of stock in cart");
-                return BadRequest("cart product out of stock");
+                return BadRequest(new ErrorResponse { errorCode = 400, errorMessage = "product not found", errorType = "get-cart-id" });
             }
 
             if (!_cartService.checkProductExist(cartDetail.ProductId,authId))
             {
                 _logger.LogError("product not found");
-                return Conflict(new ErrorResponse { errorCode = 409, errorMessage = "product already exist", errorType = "add-cart" });
+                return Conflict(new ErrorResponse { errorCode = 409, errorMessage = "product already exist", errorType = "get-cart-id" });
             }
 
             _cartService.UpdateCartProduct(cartDetail,  authId);
@@ -151,9 +147,9 @@ namespace Order.Controllers
         ///</summary>
         ///<remarks>To delete an product from cart database</remarks> 
         ///<param name="productId"></param> 
-        ///<response code = "200" >address book delted successfully</response> 
+        ///<response code = "200" >cart delted successfully</response> 
         ///<response code = "401" >Not an authorized user</response>
-        ///<response code = "404" >AddressBook not found</response>
+        ///<response code = "404" >product not found</response>
         ///<response code="500">Internel server error</response>
         [Authorize]
         [HttpDelete("cart/product/{productId}")]
@@ -165,7 +161,6 @@ namespace Order.Controllers
         public IActionResult DeleteCartProduct(Guid productId)
         {
             Guid authId = Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
-
             if (!_cartService.checkProductExist(productId,authId))
             {
                 _logger.LogError("product not found");
@@ -181,16 +176,18 @@ namespace Order.Controllers
         ///Move cart to order 
         ///</summary>
         ///<remarks>To move an cart to order stored in the database</remarks> 
-        ///<response code = "200" >get cart based on userId returned successfully</response> 
+        ///<response code = "200" >order id returned successfully</response> 
         ///<response code = "401" >Not an authorized user</response>
-        ///<response code = "404" >AddressBook not found</response>
+        ///<response code="400">product out of stock</response>
+        ///<response code = "404" >cart is empty</response>
         ///<response code="500">Internel server error</response>
         [Authorize]
         [HttpGet("carttoorder")]
         [SwaggerOperation(Summary = "Cart To Order", Description = "To move an cart to order stored in the database")]
-        [SwaggerResponse(200, "Success", typeof(WishList))]
+        [SwaggerResponse(200, "Success", typeof(CreatedSuccessResponse))]
         [SwaggerResponse(401, "Unauthorized", typeof(ErrorResponse))]
         [SwaggerResponse(404, "Not Found", typeof(ErrorResponse))]
+        [SwaggerResponse(400, "Bad Request", typeof(ErrorResponse))]
         [SwaggerResponse(500, "Internal server error", typeof(ErrorResponse))]
         public IActionResult MoveToOrder()
         {
@@ -205,11 +202,10 @@ namespace Order.Controllers
             }
             _logger.LogInformation("Returned wishlist based on name ");
             string result = _cartService.UpdateOrderIdToCart(cartDetails, authId, token);
-
             if (result == "failed")
             {
                 _logger.LogError("Product out of stock");
-                return NotFound("product out of stock");
+                return BadRequest("product out of stock");
             }
             return Ok(result);
         }

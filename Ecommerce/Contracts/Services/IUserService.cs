@@ -10,7 +10,6 @@ namespace Customer.Contracts.Services
         ///<summary>
         ///create new user in db
         ///</summary>
-        ///<param name="authId"></param>
         ///<param name="user"></param>
         Guid CreateUser(CreateUserDto user);
 
@@ -19,6 +18,7 @@ namespace Customer.Contracts.Services
         ///</summary>
         ///<param name="userDetils"></param>
         ///<param name="userFromRepo"></param>
+        ///<param name="userId"></param>
         
         void UpdateUser(Guid userId, UpdateUserDto userDetils, User userFromRepo);
 
@@ -29,28 +29,10 @@ namespace Customer.Contracts.Services
         UserCredential GetUserByUserName(string userName);
 
         ///<summary>
-        ///get all address book based on filter
-        ///</summary>
-        ///<param name="pageSortParam"></param>
-        ///List<User> GetAllCustomer(PageSortParam pageSortParam);
-
-        ///<summary>
-        ///update address book in database
-        ///</summary>
-        ///<param name="users"></param>
-        ///IEnumerable<UserDto> FetchAddressBookDetail(List<User> users);
-
-        ///<summary>
-        ///get single address book detais
+        ///get single user detail 
         ///</summary>
         ///<param name="user"></param>
         UserDto FetchSingleCustomerDetail(User user);
-
-        ///<summary>
-        ///delete address book in database
-        ///</summary>
-        ///<param name="user"></param>
-        ///void DeleteAddressBook(Guid userId);
 
         ///<summary>
         ///get user by user id
@@ -59,23 +41,14 @@ namespace Customer.Contracts.Services
         User GetUserById(Guid userId);
 
         ///<summary>
-        ///update address book details
-        ///</summary>
-        ///<param name="authId"></param>
-        ///<param name="userId"></param>
-        ///<param name="userFromRepo"></param>
-        ///<param name="userInput"></param>
-        ///void UpdateAddressBook(Guid userId, User userInput, User userFromRepo, Guid authId);
-
-        ///<summary>
-        ///validate user input in update user 
+        ///validate user input for update  
         ///</summary>
         ///<param name="user"></param>
         ///<param name="id"></param>
         ValidateInputResponse ValidateUserInputUpdate(UpdateUserDto user, Guid id);
 
         ///<summary>
-        ///fetch user details for create 
+        ///validate user input for create
         ///</summary>
         ///<param name="user"></param>
         ValidateInputResponse ValidateUserInputCreate(CreateUserDto user);

@@ -22,12 +22,12 @@ namespace Customer.Entities.Models
         public string UpdatedAt { get; set; }
 
         ///<summary>
-        /// who created have userId 
+        /// who created this userId 
         ///</summary>
         public Guid CreatedBy { get; set; }
 
         ///<summary>
-        /// who updated have userId 
+        /// who updated this userId 
         ///</summary>
         public Guid UpdatedBy { get; set; }
 

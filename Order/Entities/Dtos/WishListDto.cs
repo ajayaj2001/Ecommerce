@@ -20,7 +20,7 @@ namespace Order.Entities.Dtos
         public Guid UserId { get; set; }
 
         ///<summary>
-        /// product list
+        /// product id
         ///</summary>
         public Guid ProductId { get; set; }
     }

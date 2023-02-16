@@ -12,6 +12,11 @@ namespace JWTAuthenticationManager
     {
         public const string JWT_SECURITY_KEY = "yPkCqn4kSWL taJwXvN2jGzpQRyTZ3gdXkt7FeBJP";
         private const int JWT_TOKEN_VALIDITY_MINS = 360;
+
+        ///<summary>
+        /// generate jwt token
+        ///</summary>
+        ///<param name="authenticationRequest"></param>
         public AuthenticationResponse? GenerateJwtToken(AuthenticationRequest authenticationRequest)
         {
             if (string.IsNullOrWhiteSpace(authenticationRequest.UserName) || string.IsNullOrWhiteSpace(authenticationRequest.Password))
@@ -22,7 +27,7 @@ namespace JWTAuthenticationManager
             var claimsIdentity = new ClaimsIdentity(new List<Claim>
             {
                 new Claim (JwtRegisteredClaimNames.Sub, authenticationRequest.Id.ToString()),
-                new Claim (ClaimTypes. Role,authenticationRequest.Role)
+                new Claim (ClaimTypes.Role,authenticationRequest.Role)
             });
 
             var signingCredentials = new SigningCredentials(

@@ -11,11 +11,10 @@ namespace Customer.Contracts.Repositories
         ///to create user in db
         ///</summary>
         ///<param name="user"></param>
-        // user operation
         void CreateUser(User user);
 
         ///<summary>
-        /// street 1  of the user 
+        /// get user credential by username
         ///</summary>
         ///<param name="email"></param>
         UserCredential GetUserCredentialByUserName(string email);
@@ -23,11 +22,11 @@ namespace Customer.Contracts.Repositories
         ///<summary>
         /// get user credientials by user id
         ///</summary>
-        ///<param name="email"></param>
+        ///<param name="userId"></param>
         UserCredential GetUserCredentialByUserId(Guid userId);
 
         ///<summary>
-        /// street 1  of the user 
+        /// get user crediential by user name for update
         ///</summary>
         ///<param name="email"></param>
         ///<param name="userId"></param>
@@ -52,7 +51,7 @@ namespace Customer.Contracts.Repositories
         bool IsEmailExist(string email);
 
         ///<summary>
-        ///is email exist
+        ///is email exist update
         ///</summary>
         ///<param name="email"></param>
         ///<param name="id"></param>

@@ -26,10 +26,10 @@ namespace Product.Services
         }
 
         ///<summary>
-        ///create new user in db
+        ///create new product in db
         ///</summary>
         ///<param name="authId"></param>
-        ///<param name="user"></param>
+        ///<param name="productInput"></param>
         public Guid CreateProduct(CreateProductDto productInput, Guid authId)
         {
             ProductDetail product = _mapper.Map<ProductDetail>(productInput);
@@ -56,14 +56,12 @@ namespace Product.Services
         public List<ResultProductDto> GetAllProducts(PageSortParam pageSortParam, string role)
         {
             IEnumerable<ProductDetail> foundedUserList = _productRepository.GetAllProducts();
-
             if (role != "admin")
                 foundedUserList = foundedUserList.Where(e => e.Visibility == true);
 
             PaginationHandler<ProductDetail> list = new PaginationHandler<ProductDetail>(pageSortParam);
             List<ProductDetail> filteredList = list.GetData(foundedUserList);
             List<ResultProductDto> productList = _mapper.Map<IEnumerable<ResultProductDto>>(filteredList).ToList();
-
             productList.ForEach(product =>
             {
                 filteredList.ForEach(filProduct =>
@@ -74,7 +72,6 @@ namespace Product.Services
                     }
                 });
             });
-
             return productList;
         }
 
@@ -85,12 +82,10 @@ namespace Product.Services
         public ProductDto GetDetailedProductById(Guid productId)
         {
             ProductDetail product = _productRepository.GetProductById(productId);
-
             if (product == null)
                 return null;
 
             ProductDto fetchedProduct = _mapper.Map<ProductDto>(product);
-
             fetchedProduct.Type = _categoryRepository.GetTypeById(product.CategoryId).Name;
             return fetchedProduct;
         }
@@ -137,7 +132,7 @@ namespace Product.Services
         }
 
         ///<summary>
-        ///update address book details
+        ///update proudct details 
         ///</summary>
         ///<param name="authId"></param>
         ///<param name="productFromRepo"></param>
@@ -153,11 +148,9 @@ namespace Product.Services
         }
 
         ///<summary>
-        ///update address book details
+        ///update product details list
         ///</summary>
-        ///<param name="authId"></param>
-        ///<param name="productFromRepo"></param>
-        ///<param name="productInput"></param>
+        ///<param name="products"></param>
         public void UpdateProductList(List<UpdateProductQuantityDto> products)
         {
             foreach (UpdateProductQuantityDto productDetail in products)

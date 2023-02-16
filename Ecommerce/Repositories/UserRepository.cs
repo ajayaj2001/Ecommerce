@@ -20,7 +20,6 @@ namespace Customer.Repositories
         ///to create user in db
         ///</summary>
         ///<param name="user"></param>
-        // user operation
         public void CreateUser(User user)
         {
             _context.Users.Add(user);
@@ -28,7 +27,7 @@ namespace Customer.Repositories
         }
 
         ///<summary>
-        ///get user by user name
+        ///get user credientials by user name
         ///</summary>
         ///<param name="userName"></param>
         public UserCredential GetUserCredentialByUserName(string userName)
@@ -38,10 +37,10 @@ namespace Customer.Repositories
         }
 
         ///<summary>
-        ///get user by user name
+        ///get user credientials by user name for update
         ///</summary>
         ///<param name="userName"></param>
-        ///param name="userId"></param>
+        ///<param name="userId"></param>
         public UserCredential GetUserCredentialByUserNameUpdate(string userName,Guid userId)
         {
             UserCredential user = _context.credentials.Where(a => a.UserName == userName &&a.UserId!=userId && a.IsActive).FirstOrDefault();
@@ -51,8 +50,7 @@ namespace Customer.Repositories
         ///<summary>
         ///get user credientials by user id
         ///</summary>
-        ///<param name="userName"></param>
-        ///param name="userId"></param>
+        ///<param name="userId"></param>
         public UserCredential GetUserCredentialByUserId(Guid userId)
         {
             UserCredential user = _context.credentials.Where(a => a.UserId == userId && a.IsActive).FirstOrDefault();
@@ -87,7 +85,7 @@ namespace Customer.Repositories
         }
 
         ///<summary>
-        ///is email exist
+        ///is email exist for update
         ///</summary>
         ///<param name="email"></param>
         ///param name="id"></param>

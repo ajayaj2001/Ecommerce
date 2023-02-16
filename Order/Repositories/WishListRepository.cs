@@ -18,7 +18,7 @@ namespace Order.Repositories
         }
 
         ///<summary>
-        ///to create user in db
+        ///create wishlist in db
         ///</summary>
         ///<param name="wishList"></param>
         public void CreateWishList(WishList wishList)
@@ -27,10 +27,10 @@ namespace Order.Repositories
         }
 
         ///<summary>
-        ///to create user in db
+        ///check if product exist in wishlist
         ///</summary>
         ///<param name="wishList"></param>
-        ///param name="userId"></param>
+        ///<param name="userId"></param>
         public bool checkIfProductExist(CreateWishListDto wishList, Guid userId)
         {
             return _context.WishLists.Any(e => e.UserId == userId && e.Name == wishList.Name && e.ProductId == wishList.ProductId && e.IsActive);
@@ -46,30 +46,30 @@ namespace Order.Repositories
             return _context.WishLists.Any(e => e.UserId == userId && e.Name == name && e.IsActive);
         }
 
-        //<summary>
-        ///get wishlist in database
+        ///<summary>
+        ///get wishlist by wishlist name in database
         ///</summary>
         ///<param name="wishlistName"></param>
-        ///param name="authId"></param>
+        ///<param name="authId"></param>
         public IEnumerable<WishList> GetWishlistByName(string wishlistName, Guid authId)
         {
             return _context.WishLists.Where(list => list.Name == wishlistName && list.UserId == authId && list.IsActive);
         }
 
-        //<summary>
+        ///<summary>
         ///get wishlist product in database
         ///</summary>
         ///<param name="wishlist"></param>
-        ///param name="authId"></param>
+        ///<param name="authId"></param>
         public WishList GetWishlistProduct(CreateWishListDto wishlist, Guid authId)
         {
             return _context.WishLists.FirstOrDefault(list => list.Name == wishlist.Name && list.ProductId == wishlist.ProductId && list.UserId == authId);
         }
 
-        //<summary>
+        ///<summary>
         ///get wishlist name in database
         ///</summary>
-        ///param name="authId"></param>
+        ///<param name="authId"></param>
         public IEnumerable<string> GetWishlistNameForUser(Guid authId)
         {
             return _context.WishLists.Where(x=>x.UserId==authId&&x.IsActive).Select(x=>x.Name).Distinct();

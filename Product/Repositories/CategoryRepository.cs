@@ -16,7 +16,7 @@ namespace Product.Repositories
         }
 
         ///<summary>
-        ///get category id by categroy name
+        ///get category id by category name
         ///</summary>
         ///<param name="name"></param>
         public Category GetTypeByName(string name)

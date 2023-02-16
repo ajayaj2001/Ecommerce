@@ -24,33 +24,27 @@ namespace Customer.Controllers
         }
 
         ///<summary> 
-        ///Create Address Book 
+        ///Create user
         ///</summary>
-        ///<remarks>To create address book with first name, last name and their communication details</remarks> 
+        ///<remarks>To create new user with address card details</remarks> 
         ///<param name="user"></param> 
         ///<response code = "200" >Id of created address book returned successfully</response> 
         ///<response code = "401" >Not an authorized user</response>
-        ///<response code = "409" >The user input is not valid</response>
-        ///<response code = "404" >MetaData type not found</response>
+        ///<response code = "409" >user input invalid</response>
         ///<response code="500">Internel server error</response>
         [AllowAnonymous]
         [HttpPost("customer")]
-        [SwaggerOperation(Summary = "Create Address Book", Description = "To create address book with first name, last name and their communication details")]
+        [SwaggerOperation(Summary = "Create User", Description = "To create address book with first name, last name and their communication details")]
         [SwaggerResponse(200, "Created", typeof(CreatedSuccessResponse))]
         [SwaggerResponse(401, "Unauthorized", typeof(ErrorResponse))]
         [SwaggerResponse(409, "Conflict", typeof(ErrorResponse))]
-        [SwaggerResponse(404, "Not Found", typeof(ErrorResponse))]
         [SwaggerResponse(500, "Internal server error", typeof(ErrorResponse))]
         public ActionResult<string> CreateUser([FromBody] CreateUserDto user)
         {
             ValidateInputResponse validate = _userServices.ValidateUserInputCreate(user);
-            if (validate.errorCode == 404)
+            if (validate.errorCode == 409)
             {
-                return NotFound(new ErrorResponse { errorCode = validate.errorCode, errorMessage = validate.errorMessage, errorType = "create-addressbook" });
-            }
-            else if (validate.errorCode == 409)
-            {
-                return Conflict(new ErrorResponse { errorCode = validate.errorCode, errorMessage = validate.errorMessage, errorType = "create-addressbook" });
+                return Conflict(new ErrorResponse { errorCode = validate.errorCode, errorMessage = validate.errorMessage, errorType = "create-user" });
             }
             else
             {
@@ -60,19 +54,19 @@ namespace Customer.Controllers
         }
 
         ///<summary> 
-        ///Update Address Book 
+        ///Update User 
         ///</summary>
-        ///<remarks>To update the existing address book details like first name etc</remarks> 
+        ///<remarks>To update the existing user details like first name etc</remarks> 
         ///<param name="user"></param> 
         ///<param name="id"></param>
-        ///<response code = "200" >Address book updated successfully</response> 
+        ///<response code = "200" >User details updated successfully</response> 
         ///<response code = "401" >Not an authorized user</response>
         ///<response code = "409" >The user input is not valid</response>
-        ///<response code = "404" >AddressBook not found</response>
+        ///<response code = "404" >user not found</response>
         ///<response code="500">Internel server error</response>
         [Authorize]
         [HttpPut("customer/{id}")]
-        [SwaggerOperation(Summary = "Update Address Book", Description = "To update the existing address book details like first name etc")]
+        [SwaggerOperation(Summary = "Update User", Description = "To update the existing user details like first name etc")]
         [SwaggerResponse(200, "Success", typeof(string))]
         [SwaggerResponse(401, "Unauthorized", typeof(ErrorResponse))]
         [SwaggerResponse(404, "Not Found", typeof(ErrorResponse))]
@@ -84,25 +78,18 @@ namespace Customer.Controllers
             if (userFromRepo == null)
             {
                 _logger.LogError("User not found");
-                return NotFound();
+                return NotFound(new ErrorResponse { errorCode = 404, errorMessage = "user not found", errorType = "update-addressbook" });
             }
-            //var users = _userServices.FetchSingleCustomerDetail(userFromRepo);
-
             ValidateInputResponse validate = _userServices.ValidateUserInputUpdate(user, id);
-            if (validate.errorCode == 404)
-            {
-                return NotFound(new ErrorResponse { errorCode = validate.errorCode, errorMessage = validate.errorMessage, errorType = "update-addressbook" });
-            }
-            else if (validate.errorCode == 409)
+            if (validate.errorCode == 409)
             {
                 return Conflict(new ErrorResponse { errorCode = validate.errorCode, errorMessage = validate.errorMessage, errorType = "update-addressbook" });
             }
             else
             {
-                //User updatedUser = _userServices.FetchUserDetailsForUpdate(user);
                 _userServices.UpdateUser(id, user, userFromRepo);
-                _logger.LogInformation("Address type updated");
-                return Ok("updated");
+                _logger.LogInformation("user updated");
+                return Ok("user updated successfully");
             }
         }
 
@@ -128,9 +115,9 @@ namespace Customer.Controllers
             if (foundUser == null)
             {
                 _logger.LogError("User not found");
-                return NotFound(new ErrorResponse { errorCode = 404, errorMessage = "user not found", errorType = "get-addressbook" });
+                return NotFound(new ErrorResponse { errorCode = 404, errorMessage = "user not found", errorType = "get-user" });
             }
-            _logger.LogInformation("Returned individual address book ");
+            _logger.LogInformation("Returned individual user details");
             return Ok(_userServices.FetchSingleCustomerDetail(foundUser));
         }
     }

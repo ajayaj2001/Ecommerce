@@ -16,7 +16,6 @@ namespace Customer.Controllers
     [Route("api")]
     public class AuthController : Controller
     {
-
         private readonly IAuthService _authServices;
         private readonly ILogger _logger;
         private readonly JWTTokenHandler _jwtTokenHandler;
@@ -29,16 +28,16 @@ namespace Customer.Controllers
         }
 
         ///<summary> 
-        ///To login user
+        ///login user
         ///</summary>
-        ///<remarks>To create and return session for valid user</remarks> 
+        ///<remarks>To validate user detail and return session key</remarks> 
         ///<param name="loginCredentials"></param> 
-        ///<response code = "200" >Session type and token returned succesfully</response> 
+        ///<response code = "200" >session token returned succesfully</response> 
         ///<response code = "401" >User credientials invalid</response> 
         ///<response code="500">Internel server error</response>
         [AllowAnonymous]
         [HttpPost("login")]
-        [SwaggerOperation(Summary = "Login User", Description = "Login user and return session token")]
+        [SwaggerOperation(Summary = "Login User", Description = "validate user detail and return session token")]
         [SwaggerResponse(200, "Success", typeof(LoginSuccessResponse))]
         [SwaggerResponse(401, "Unauthorized", typeof(ErrorResponse))]
         [SwaggerResponse(500, "Internal server error", typeof(ErrorResponse))]
@@ -48,24 +47,23 @@ namespace Customer.Controllers
             if (loginCredentials.UserName == null || loginCredentials.Password == null)
             {
                 _logger.LogError("User name or password Empty");
-                return Unauthorized(new ErrorResponse { errorMessage = "user_name or password is Empty", errorCode = 401, errorType = "user-credientials" });
+                return Unauthorized(new ErrorResponse { errorMessage = "user name or password is Empty", errorCode = 401, errorType = "user-login" });
             }
             //is username exist
             UserCredential user = _authServices.GetUserByUserName(loginCredentials.UserName);
             if (user == null)
             {
                 _logger.LogError("UserName not exist");
-                return Unauthorized(new ErrorResponse { errorMessage = "userName not exist", errorCode = 401, errorType = "user-credientials" });
+                return Unauthorized(new ErrorResponse { errorMessage = "userName not exist", errorCode = 401, errorType = "user-login" });
             };
             //is password same
             bool check = _authServices.ComparePassword(user.Password, loginCredentials.Password);
             if (!check)
             {
                 _logger.LogError("Wrong password");
-                return Unauthorized(new ErrorResponse { errorMessage = "wrong password", errorCode = 401, errorType = "user-credientials" });
+                return Unauthorized(new ErrorResponse { errorMessage = "wrong password", errorCode = 401, errorType = "user-login" });
             }
             AuthenticationResponse authenticationResponse = _jwtTokenHandler.GenerateJwtToken(new AuthenticationRequest() { Password = user.Password, Role = user.Role, UserName = user.UserName,Id=user.Id });
-
             _logger.LogInformation("Session created successfully");
             return Ok(new LoginSuccessResponse { access_token = authenticationResponse.JwtToken, token_type = "Bearer" });
         }

@@ -7,13 +7,13 @@ namespace Order.Entities.Dtos
     public class CreateCartDto 
     {
         ///<summary>
-        /// wishlist name
+        /// quantity
         ///</summary>
         [Required]
         public int Quantity { get; set; }
 
         ///<summary>
-        /// product list
+        /// product id
         ///</summary>
         [Required]
         [JsonProperty(PropertyName = "product_id")]

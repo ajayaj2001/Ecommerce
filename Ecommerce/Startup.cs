@@ -1,14 +1,11 @@
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json.Serialization;
 using AutoMapper;
 using System;
-using System.Text;
 using Microsoft.AspNetCore.Http;
 using Customer.Controllers;
 using Microsoft.Extensions.Logging;

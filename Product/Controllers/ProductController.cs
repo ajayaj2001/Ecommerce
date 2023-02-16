@@ -23,7 +23,7 @@ namespace Product.Controllers
         private readonly ILogger _logger;
         private readonly IMapper _mapper;
 
-        public ProductController(IMapper mapper,ILogger logger, IProductService productServices)
+        public ProductController(IMapper mapper, ILogger logger, IProductService productServices)
         {
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
             _productServices = productServices ?? throw new ArgumentNullException(nameof(productServices));
@@ -31,32 +31,31 @@ namespace Product.Controllers
         }
 
         ///<summary> 
-        ///Create Address Book 
+        ///Create Product
         ///</summary>
-        ///<remarks>To create address book with first name, last name and their communication details</remarks> 
+        ///<remarks>To create new product</remarks> 
         ///<param name="user"></param> 
-        ///<response code = "200" >Id of created address book returned successfully</response> 
+        ///<response code = "200" >Id of created product returned successfully</response> 
         ///<response code = "401" >Not an authorized user</response>
-        ///<response code = "409" >The user input is not valid</response>
-        ///<response code = "404" >MetaData type not found</response>
+        ///<response code = "404" >category type not found</response>
         ///<response code="500">Internel server error</response>
         [Authorize(Roles = "admin")]
         [HttpPost("product")]
-        [SwaggerOperation(Summary = "Create Address Book", Description = "To create address book with first name, last name and their communication details")]
+        [SwaggerOperation(Summary = "Create Product", Description = "To create new product ")]
         [SwaggerResponse(200, "Created", typeof(CreatedSuccessResponse))]
         [SwaggerResponse(401, "Unauthorized", typeof(ErrorResponse))]
-        [SwaggerResponse(409, "Conflict", typeof(ErrorResponse))]
         [SwaggerResponse(404, "Not Found", typeof(ErrorResponse))]
         [SwaggerResponse(500, "Internal server error", typeof(ErrorResponse))]
         public ActionResult<string> CreateProduct([FromBody] CreateProductDto product)
         {
             string claimId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-
             Guid authId = Guid.Parse(claimId);
-
             Category category = _productServices.GetCategoryByName(product.Type);
             if (category == null)
+            {
+                _logger.LogError("product type not found");
                 return NotFound(new ErrorResponse { errorCode = 404, errorMessage = "product type not found", errorType = "create-product" });
+            }
             else
             {
                 product.Type = category.Id.ToString();
@@ -66,16 +65,17 @@ namespace Product.Controllers
         }
 
         ///<summary> 
-        ///Get All Address Book 
+        ///Get All Product
         ///</summary>
-        ///<remarks>To get all the address book stored in the database</remarks> 
+        ///<remarks>To get all product</remarks> 
         ///<param name="size"></param> 
         /// ///<param name="pageNo"></param> 
         /// ///<param name="sortBy"></param> 
         /// ///<param name="sortOrder"></param> 
-        ///<response code = "200" >get all address book based on query returned successfully</response> 
+        /// <param name="category"></param>
+        ///<response code = "200" >get all product based on query returned successfully</response> 
         ///<response code = "401" >Not an authorized user</response>
-        ///<response code = "404" >AddressBook not found</response>
+        ///<response code = "404" >filter products not found</response>
         ///<response code="500">Internel server error</response>
         [Authorize]
         [HttpGet("product", Name = "GetAllProduct")]
@@ -93,7 +93,6 @@ namespace Product.Controllers
                 _logger.LogError("SortBy value Not Found");
                 return NotFound(new ErrorResponse { errorCode = 404, errorMessage = "SortBy value Not Found", errorType = "get-users" });
             }
-
             if (category != "")
             {
                 Category categoryFromRepo = _productServices.GetCategoryByName(category);
@@ -104,9 +103,8 @@ namespace Product.Controllers
                 }
                 category = categoryFromRepo.Id.ToString();
             }
-
             PageSortParam pageSortParam = new PageSortParam() { Size = size, PageNo = pageNo, SortBy = sortBy, SortOrder = sortOrder, Category = category };
-            List<ResultProductDto> products = _productServices.GetAllProducts(pageSortParam,role);
+            List<ResultProductDto> products = _productServices.GetAllProducts(pageSortParam, role);
             if (products == null)
             {
                 _logger.LogError("No Product Found");
@@ -121,9 +119,9 @@ namespace Product.Controllers
         ///</summary>
         ///<remarks>To get an product details stored in the database</remarks> 
         ///<param name="id"></param> 
-        ///<response code = "200" >get address book based on userId returned successfully</response> 
+        ///<response code = "200" > product details returned successfully</response> 
         ///<response code = "401" >Not an authorized user</response>
-        ///<response code = "404" >AddressBook not found</response>
+        ///<response code = "404" >product not found</response>
         ///<response code="500">Internel server error</response>
         [Authorize]
         [HttpGet("product/{id}", Name = "GetProduct")]
@@ -135,7 +133,6 @@ namespace Product.Controllers
         public IActionResult GetProductById(Guid id)
         {
             string role = User.Claims.Where(c => c.Type == ClaimTypes.Role).Select(c => c.Value).ToList()[0];
-
             ProductDto foundProduct = _productServices.GetDetailedProductById(id);
             if (foundProduct == null || !(foundProduct.Visibility || role == "admin"))
             {
@@ -143,44 +140,42 @@ namespace Product.Controllers
                 return NotFound(new ErrorResponse { errorCode = 404, errorMessage = "product not found", errorType = "get-product" });
             }
             _logger.LogInformation("Returned individual product ");
-            return StatusCode(200,_mapper.Map<ResultProductDto>(foundProduct));
+            return Ok(_mapper.Map<ResultProductDto>(foundProduct));
         }
 
         ///<summary> 
-        ///Update Address Book 
+        ///Update Product
         ///</summary>
-        ///<remarks>To update the existing address book details like first name etc</remarks> 
-        ///<param name="user"></param> 
+        ///<remarks>To update the existing product details </remarks> 
+        ///<param name="productInput"></param> 
         ///<param name="id"></param>
-        ///<response code = "200" >Address book updated successfully</response> 
+        ///<response code = "200" >product updated successfully</response> 
         ///<response code = "401" >Not an authorized user</response>
-        ///<response code = "409" >The user input is not valid</response>
-        ///<response code = "404" >AddressBook not found</response>
+        ///<response code = "404" >product not found</response>
         ///<response code="500">Internel server error</response>
-        [Authorize(Roles ="admin")]
+        [Authorize(Roles = "admin")]
         [HttpPut("product/{id}")]
-        [SwaggerOperation(Summary = "Update Product", Description = "To update the existing product details like first name etc")]
+        [SwaggerOperation(Summary = "Update Product", Description = "To update the existing product details")]
         [SwaggerResponse(200, "Success", typeof(string))]
         [SwaggerResponse(401, "Unauthorized", typeof(ErrorResponse))]
         [SwaggerResponse(404, "Not Found", typeof(ErrorResponse))]
-        [SwaggerResponse(409, "Conflict", typeof(ErrorResponse))]
         [SwaggerResponse(500, "Internal server error", typeof(ErrorResponse))]
         public ActionResult<string> UpdateProduct(Guid id, [FromBody] UpdateProductDto productInput)
         {
             Guid authId = Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
-
             ProductDetail productFromRepo = _productServices.GetProductById(id);
             if (productFromRepo == null)
             {
                 _logger.LogError("Product not found");
-                return NotFound();
+                return NotFound(new ErrorResponse { errorCode = 404, errorMessage = "product not found", errorType = "update-product" });
             }
-
             Category category = _productServices.GetCategoryByName(productInput.Type);
             if (category == null)
+            {
+                _logger.LogError("Product type not found");
                 return NotFound(new ErrorResponse { errorCode = 404, errorMessage = "product type not found", errorType = "update-product" });
-
-            _productServices.UpdateProduct(productInput, productFromRepo, authId,category.Id);
+            };
+            _productServices.UpdateProduct(productInput, productFromRepo, authId, category.Id);
             _logger.LogInformation("Product updated");
             return Ok("updated");
         }
@@ -192,7 +187,7 @@ namespace Product.Controllers
         ///<param name="id"></param> 
         ///<response code = "200" >product delted successfully</response> 
         ///<response code = "401" >Not an authorized user</response>
-        ///<response code = "404" >AddressBook not found</response>
+        ///<response code = "404" >product not found</response>
         ///<response code="500">Internel server error</response>
         [Authorize(Roles = "admin")]
         [HttpDelete("product/{id}")]
@@ -201,7 +196,7 @@ namespace Product.Controllers
         [SwaggerResponse(401, "Unauthorized", typeof(ErrorResponse))]
         [SwaggerResponse(404, "Not Found", typeof(ErrorResponse))]
         [SwaggerResponse(500, "Internal server error", typeof(ErrorResponse))]
-        public IActionResult DeleteProduct(Guid id)
+        public ActionResult DeleteProduct(Guid id)
         {
             ProductDetail productFromRepo = _productServices.GetProductById(id);
             if (productFromRepo == null)
@@ -219,31 +214,31 @@ namespace Product.Controllers
         ///</summary>
         ///<remarks>To get an product details stored in the database</remarks> 
         ///<param name="id"></param> 
-        ///<response code = "200" >get address book based on userId returned successfully</response> 
+        ///<response code = "200" >get product based on product id returned successfully</response> 
         ///<response code = "401" >Not an authorized user</response>
-        ///<response code = "404" >AddressBook not found</response>
+        ///<response code = "404" >product not found</response>
         ///<response code="500">Internel server error</response>
         [Authorize]
         [HttpPost("product/getproducts", Name = "GetProducts")]
-        [SwaggerOperation(Summary = "Get Products" , Description = "To get an product details stored in the database")]
+        [SwaggerOperation(Summary = "Get Products", Description = "To get an product details stored in the database")]
         [SwaggerResponse(200, "Success", typeof(ProductDetail))]
         [SwaggerResponse(401, "Unauthorized", typeof(ErrorResponse))]
         [SwaggerResponse(404, "Not Found", typeof(ErrorResponse))]
         [SwaggerResponse(500, "Internal server error", typeof(ErrorResponse))]
-        public IActionResult GetProductByIdsService([FromBody]List<Guid> ids)
+        public ActionResult GetProductByIdsService([FromBody] List<Guid> ids)
         {
             _logger.LogInformation("Returned  product details ");
             return Ok(_productServices.GetProductByIds(ids));
         }
 
         ///<summary> 
-        ///Get product by ids
+        ///update product by ids
         ///</summary>
-        ///<remarks>To get an product details stored in the database</remarks> 
+        ///<remarks>To update an product details stored in the database</remarks> 
         ///<param name="id"></param> 
-        ///<response code = "200" >get address book based on userId returned successfully</response> 
+        ///<response code = "200" >update product based on userId returned successfully</response> 
         ///<response code = "401" >Not an authorized user</response>
-        ///<response code = "404" >AddressBook not found</response>
+        ///<response code = "404" >product not found</response>
         ///<response code="500">Internel server error</response>
         [Authorize]
         [HttpPut("product/updateproducts", Name = "UpdateProducts")]
@@ -252,7 +247,7 @@ namespace Product.Controllers
         [SwaggerResponse(401, "Unauthorized", typeof(ErrorResponse))]
         [SwaggerResponse(404, "Not Found", typeof(ErrorResponse))]
         [SwaggerResponse(500, "Internal server error", typeof(ErrorResponse))]
-        public IActionResult UpdateProductByIdsService([FromBody] List<UpdateProductQuantityDto> products)
+        public ActionResult UpdateProductByIdsService([FromBody] List<UpdateProductQuantityDto> products)
         {
             _logger.LogInformation("Returned  product details ");
             _productServices.UpdateProductList(products);

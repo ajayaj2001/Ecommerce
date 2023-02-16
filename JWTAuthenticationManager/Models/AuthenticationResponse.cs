@@ -6,10 +6,19 @@ namespace JWTAuthenticationManager.Models
 {
     public class AuthenticationResponse
     {
+        ///<summary>
+        /// user name
+        ///</summary>
         public string UserName { get; set; }
 
+        ///<summary>
+        /// jwt token
+        ///</summary>
         public string JwtToken { get; set; }
 
+        ///<summary>
+        /// token expires time
+        ///</summary>
         public int ExpiresIn { get; set; }  
     }
 }

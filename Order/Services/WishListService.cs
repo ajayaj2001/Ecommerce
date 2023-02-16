@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using Microsoft.Extensions.Logging;
 using Order.Contracts.Repositories;
 using Order.Contracts.Services;
 using Order.Entities.Dtos;
@@ -42,7 +41,7 @@ namespace Order.Services
         }
 
         ///<summary>
-        ///check if product already added to datbase
+        ///check if product already added to wishlist
         ///</summary>
         ///<param name="wishList"></param>
         ///<param name="userId"></param>
@@ -55,7 +54,7 @@ namespace Order.Services
         ///delete wishlist in database
         ///</summary>
         ///<param name="wishlistName"></param>
-        ///param name="authId"></param>
+        ///<param name="authId"></param>
         public void DeleteWishlistByName(string wishlistName, Guid authId)
         {
             IEnumerable<WishList> wishListFromRepo = _wishListRepository.GetWishlistByName(wishlistName, authId);
@@ -70,7 +69,7 @@ namespace Order.Services
         ///delete wishlist in database
         ///</summary>
         ///<param name="wishlistName"></param>
-        ///param name="authId"></param>
+        ///<param name="authId"></param>
         public void DeleteWishlistProduct(CreateWishListDto wishlistName, Guid authId)
         {
             WishList wishListFromRepo = _wishListRepository.GetWishlistProduct(wishlistName, authId);
@@ -92,7 +91,8 @@ namespace Order.Services
         ///fetch wishlist in database
         ///</summary>
         ///<param name="wishlistName"></param>
-        ///param name="authId"></param>
+        ///<param name="authId"></param>
+        ///<param name="token"></param>
         public FetchWishListDto GetWishListByName(string wishlistName, Guid authId,string token)
         {
             FetchWishListDto resultWishList = new FetchWishListDto();
@@ -108,10 +108,10 @@ namespace Order.Services
         }
 
         ///<summary>
-        ///fetch wishlist in database
+        ///move wishlist product to cart
         ///</summary>
         ///<param name="wishlistName"></param>
-        ///param name="authId"></param>
+        ///<param name="authId"></param>
         public void MoveWishListToCart(string wishlistName, Guid authId)
         {
             IEnumerable<WishList> wishListFromRepo = _wishListRepository.GetWishlistByName(wishlistName, authId);
@@ -126,7 +126,8 @@ namespace Order.Services
         ///<summary>
         ///fetch wishlist in database
         ///</summary>
-        ///param name="userId"></param>
+        ///<param name="userId"></param>
+        ///<param name="token"></param>
         public List<FetchWishListDto> GetWishListForUser(Guid userId, string token)
         {
             List<FetchWishListDto> resultWishList = new List<FetchWishListDto>();

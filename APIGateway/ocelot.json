@@ -14,8 +14,7 @@
           "Host": "localhost",
           "Port": 3000
         }
-      ],
-      "DangerousAcceptAnyServerCertificateValidator": true
+      ]
     },
     {
       "UpstreamPathTemplate": "/api/user/{id}",
@@ -28,8 +27,7 @@
           "Host": "localhost",
           "Port": 3000
         }
-      ],
-      "DangerousAcceptAnyServerCertificateValidator": true
+      ]
     },
     {
       "UpstreamPathTemplate": "/api/signIn",
@@ -42,8 +40,7 @@
           "Host": "localhost",
           "Port": 3000
         }
-      ],
-      "DangerousAcceptAnyServerCertificateValidator": true
+      ]
     },
     {
       "UpstreamPathTemplate": "/api/product",
@@ -56,8 +53,7 @@
           "Host": "localhost",
           "Port": 3012
         }
-      ],
-      "DangerousAcceptAnyServerCertificateValidator": true
+      ]
     },
     {
       "UpstreamPathTemplate": "/api/product/{id}",
@@ -70,8 +66,7 @@
           "Host": "localhost",
           "Port": 3012
         }
-      ],
-      "DangerousAcceptAnyServerCertificateValidator": true
+      ]
     },
     {
       "UpstreamPathTemplate": "/api/wishlist",
@@ -126,8 +121,7 @@
           "Host": "localhost",
           "Port": 3022
         }
-      ],
-      "DangerousAcceptAnyServerCertificateValidator": true
+      ]
     },
     {
       "UpstreamPathTemplate": "/api/wishlisttocart/{wishlistName}",
@@ -141,7 +135,6 @@
           "Port": 3022
         }
       ],
-      "DangerousAcceptAnyServerCertificateValidator": true
     },
     {
       "UpstreamPathTemplate": "/api/",

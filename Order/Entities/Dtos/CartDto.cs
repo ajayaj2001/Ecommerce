@@ -11,7 +11,7 @@ namespace Order.Entities.Dtos
         public Guid Id { get; set; }
 
         ///<summary>
-        /// wishlist name
+        /// quantity
         ///</summary>
         public int Quantity { get; set; }
 
@@ -21,7 +21,7 @@ namespace Order.Entities.Dtos
         public Guid UserId { get; set; }
 
         ///<summary>
-        /// product list
+        /// product id
         ///</summary>
         [JsonProperty(PropertyName = "product_id")]
         public Guid ProductId { get; set; }

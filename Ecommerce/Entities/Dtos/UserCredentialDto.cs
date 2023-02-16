@@ -11,19 +11,5 @@ namespace Customer.Entities.Dtos
         [JsonProperty(PropertyName = "user_name")]
         public string UserName { get; set; }
 
-        ///<summary>
-        ///password user
-        ///</summary>
-        //public string Password { get; set; }
-
-        ///<summary>
-        ///user role
-        ///</summary>
-        //public string Role { get; set; }
-
-        ///<summary>
-        ///user id of who created address
-        ///</summary>
-        //public Guid UserId { get; set; }
     }
 }

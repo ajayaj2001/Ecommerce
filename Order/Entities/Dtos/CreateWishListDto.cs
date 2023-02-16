@@ -13,7 +13,7 @@ namespace Order.Entities.Dtos
         public string Name { get; set; }
 
         ///<summary>
-        /// product list
+        /// product id
         ///</summary>
         [Required]
         [JsonProperty(PropertyName = "product_id")]

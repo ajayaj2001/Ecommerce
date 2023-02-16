@@ -12,6 +12,7 @@ namespace Product.Contracts.Services
         ///create new product in db
         ///</summary>
         ///<param name="productDetails"></param>
+        ///<param name="authId"></param>
         Guid CreateProduct(CreateProductDto productDetails, Guid authId);
 
         ///<summary>
@@ -39,7 +40,7 @@ namespace Product.Contracts.Services
         ProductDetail GetProductById(Guid productId);
 
         ///<summary>
-        ///get product by product id
+        ///get product list by product ids
         ///</summary>
         ///<param name="productIds"></param>
         List<ResultProductDto> GetProductByIds(List<Guid> productIds);
@@ -51,7 +52,7 @@ namespace Product.Contracts.Services
         void DeleteProduct(Guid productId);
 
         ///<summary>
-        ///update address book details
+        ///update product 
         ///</summary>
         ///<param name="authId"></param>
         ///<param name="productFromRepo"></param>
@@ -60,7 +61,7 @@ namespace Product.Contracts.Services
         void UpdateProduct(UpdateProductDto productInput, ProductDetail productFromRepo, Guid authId, Guid categoryId);
 
         ///<summary>
-        ///update address book details
+        ///update product list 
         ///</summary>
         ///<param name="authId"></param>
         void UpdateProductList(List<UpdateProductQuantityDto> products);

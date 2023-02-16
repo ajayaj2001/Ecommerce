@@ -7,6 +7,10 @@ namespace JWTAuthenticationManager
 {
     public static class CustomJwtAuthExtension
     {
+        ///<summary>
+        /// custom jwt function
+        ///</summary>
+        ///<param name="services"></param>
         public static void AddCustomJwtAuthentication(this IServiceCollection services)
         {
             services.AddAuthentication(o =>

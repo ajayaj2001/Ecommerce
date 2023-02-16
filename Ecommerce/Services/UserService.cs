@@ -28,8 +28,7 @@ namespace Customer.Services
         ///<summary>
         ///create new user in db
         ///</summary>
-        ///<param name="authId"></param>
-        ///<param name="user"></param>
+        ///<param name="userDetails"></param>
         public Guid CreateUser(CreateUserDto userDetails)
         {
             User user = _mapper.Map<User>(userDetails);
@@ -47,7 +46,6 @@ namespace Customer.Services
             }
             _userRepository.CreateUser(user);
             _userRepository.Save();
-            // UserDto userDetail = _mapper.Map<UserDto>(user);
             return user.Id;
         }
 
@@ -62,7 +60,7 @@ namespace Customer.Services
         }
 
         ///<summary>
-        ///get single address book detais
+        ///get single user detais
         ///</summary>
         ///<param name="user"></param>
         public UserDto FetchSingleCustomerDetail(User user)
@@ -84,29 +82,17 @@ namespace Customer.Services
         }
 
         ///<summary>
-        ///delete address book in database
-        ///</summary>
-        ///<param name="user"></param>
-        public void DeleteCustomer(Guid userId)
-        {
-            User userFromRepo = _userRepository.GetUserById(userId);
-            userFromRepo.IsActive = false;
-            _userRepository.Save();
-        }
-
-        ///<summary>
-        ///update address book details
+        ///update user details
         ///</summary>
         ///<param name="userId"></param>
         ///<param name="userFromRepo"></param>
         ///<param name="userDetails"></param>
-        public void UpdateUser(Guid userId, UpdateUserDto userDetils, User userFromRepo)
+        public void UpdateUser(Guid userId, UpdateUserDto userDetails, User userFromRepo)
         {
             List<CardDetail> cardCollection = _userRepository.GetCardIds(userId).ToList();
             List<Address> addressCollection = _userRepository.GetAddressIds(userId).ToList();
-            User userInput = _mapper.Map<User>(userDetils);
+            User userInput = _mapper.Map<User>(userDetails);
             userInput.Id = userFromRepo.Id;
-            //userInput.Credentials.Id = userFromRepo.Credentials.Id;
             userInput.Credentials.UpdatedAt= DateTime.Now.ToString();
 
             foreach (CardDetail item in userInput.CardDetails)
@@ -173,7 +159,6 @@ namespace Customer.Services
                 _logger.LogError("Email already exist");
                 return new ValidateInputResponse() { errorMessage = "Email already exist", errorCode = 409 };
             }
-
             if (user.Addresses.GroupBy(x => x.Type).Any(g => g.Count() > 1))
             {
                 _logger.LogError("Address Type already exist");

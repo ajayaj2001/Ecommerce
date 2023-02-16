@@ -17,10 +17,9 @@ namespace Product.Repositories
         }
 
         ///<summary>
-        ///to create user in db
+        ///to create product in db
         ///</summary>
-        ///<param name="user"></param>
-        // user operation
+        ///<param name="product"></param>
         public void CreateProduct(ProductDetail product)
         {
             _context.Products.Add(product);

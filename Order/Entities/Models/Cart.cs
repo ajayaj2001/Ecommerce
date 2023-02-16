@@ -5,7 +5,7 @@ namespace Order.Entities.Models
     public class Cart : BaseModel
     {
         ///<summary>
-        /// wishlist name
+        /// quantity
         ///</summary>
         public int Quantity { get; set; }
 
@@ -15,7 +15,7 @@ namespace Order.Entities.Models
         public Guid UserId { get; set; }
 
         ///<summary>
-        /// product list
+        /// product id
         ///</summary>
         public Guid ProductId { get; set; }
 

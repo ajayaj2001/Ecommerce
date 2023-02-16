@@ -8,7 +8,7 @@ namespace Order.Contracts.Services
     public interface ICartService
     {
         ///<summary>
-        ///create new wishlist in db
+        ///create new cart in db
         ///</summary>
         ///<param name="authId"></param>
         ///<param name="cartDetail"></param>
@@ -17,41 +17,43 @@ namespace Order.Contracts.Services
         ///<summary>
         ///fetch cart in database
         ///</summary>
-        ///param name="userId"></param>
+        ///<param name="userId"></param>
+        ///<param name="token"></param>
         List<ReturnCartDto> GetCartForUser(Guid userId,string token);
 
         ///<summary>
-        ///check if wishlist name already added to datbase
+        ///check if product exist in cart
         ///</summary>
         ///<param name="productId"></param>
         ///<param name="userId"></param>
         bool checkProductExist(Guid productId, Guid userId);
 
         ///<summary>
-        ///delete wishlist in database
+        ///delete product from cart
         ///</summary>
         ///<param name="productId"></param>
-        ///param name="authId"></param>
+        ///<param name="authId"></param>
         void DeleteCartProduct(Guid productId, Guid authId);
 
         ///<summary>
         ///update product on cart
         ///</summary>
-        ///<param name="authId"></param>
         ///<param name="cartInput"></param>
+        ///<param name="authId"></param>
          void UpdateCartProduct(CreateCartDto cartInput, Guid authId);
 
         ///<summary>
-        ///fetch cart in database
+        ///fetch cart details in database
         ///</summary>
-        ///param name="userId"></param>
+        ///<param name="userId"></param>
         IEnumerable<Cart> GetCartDetails(Guid userId);
 
         ///<summary>
         ///move cart to order
         ///</summary>
-        ///param name="cartDetails"></param>
+        ///<param name="cartDetails"></param>
         ///<param name="authId"></param>
+        ///<param name="token"></param>
         string UpdateOrderIdToCart(List<Cart> cartDetails, Guid authId,string token);
     }
 }

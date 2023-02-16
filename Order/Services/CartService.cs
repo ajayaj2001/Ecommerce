@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using Newtonsoft.Json.Linq;
 using Order.Contracts.Repositories;
 using Order.Contracts.Services;
 using Order.Entities.Dtos;
@@ -25,7 +24,7 @@ namespace Order.Services
         }
 
         ///<summary>
-        ///create new wishlist in db
+        ///add to cart
         ///</summary>
         ///<param name="authId"></param>
         ///<param name="cartDetail"></param>
@@ -41,14 +40,13 @@ namespace Order.Services
             cart.CreatedBy = authId;
             _cartRepository.AddProductToCart(cart);
             _cartRepository.Save();
-
             return cart.Id;
         }
 
         ///<summary>
         ///fetch cart in database
         ///</summary>
-        ///param name="userId"></param>
+        ///<param name="userId"></param>
         public List<ReturnCartDto> GetCartForUser(Guid userId, string token)
         {
             List<ReturnCartDto> resultCartDetails = new List<ReturnCartDto>();
@@ -60,7 +58,6 @@ namespace Order.Services
                 ids.Add(cartDetails.ElementAt(i).ProductId);
             }
             List<ResultProductDto> productList = _apiService.GetProductByIds(ids, token);
-
             for (int i = 0; i < cartDetails.Count(); i++)
             {
                 Cart cartDetail = cartDetails.ElementAt(i);
@@ -77,9 +74,9 @@ namespace Order.Services
         }
 
         ///<summary>
-        ///check if wishlist name already added to datbase
+        ///check product exist in cart
         ///</summary>
-        ///<param name="name"></param>
+        ///<param name="productId"></param>
         ///<param name="userId"></param>
         public bool checkProductExist(Guid productId, Guid userId)
         {
@@ -87,10 +84,10 @@ namespace Order.Services
         }
 
         ///<summary>
-        ///delete wishlist in database
+        ///delete cart in database
         ///</summary>
         ///<param name="productId"></param>
-        ///param name="authId"></param>
+        ///<param name="authId"></param>
         public void DeleteCartProduct(Guid productId, Guid authId)
         {
             Cart cartDetail = _cartRepository.GetProductFromCart(productId, authId);
@@ -116,7 +113,7 @@ namespace Order.Services
         ///<summary>
         ///fetch cart in database
         ///</summary>
-        ///param name="userId"></param>
+        ///<param name="userId"></param>
         public IEnumerable<Cart> GetCartDetails(Guid userId)
         {
             IEnumerable<Cart> cartDetails = _cartRepository.GetCartDetailsForUser(userId);
@@ -126,7 +123,7 @@ namespace Order.Services
         ///<summary>
         ///move cart to order
         ///</summary>
-        ///param name="cartDetails"></param>
+        ///<param name="cartDetails"></param>
         ///<param name="authId"></param>
         public string UpdateOrderIdToCart(List<Cart> cartDetails, Guid authId, string token)
         {

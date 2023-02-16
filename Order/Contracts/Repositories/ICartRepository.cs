@@ -15,11 +15,11 @@ namespace Order.Contracts.Repositories
         ///<summary>
         ///get cart for user
         ///</summary>
-        ///param name="authId"></param>
+        ///<param name="authId"></param>
         IEnumerable<Cart> GetCartDetailsForUser(Guid authId);
 
         ///<summary>
-        ///check if proudct name already exist in cart
+        ///check if product already exist in cart
         ///</summary>
         ///<param name="productId"></param>
         ///<param name="userId"></param>

@@ -1,24 +1,27 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System;
-using Product.Entities.Models;
+using System.Collections.Generic;
+using Product.DbContexts;
 using System.IO;
+using Product.Entities.Models;
+using System.Reflection.Emit;
 
-namespace Product.DbContexts
+namespace ProductUnitTest.InMemoryContext
 {
-    public class ProductContext : DbContext
+    public static class InMemorydbContext
     {
-        public ProductContext(DbContextOptions<ProductContext> options) : base(options)
+        /// <summary>
+        /// This method is used to create the InMemeorydatabase
+        /// </summary>
+        public static ProductContext productContext()
         {
-        }
+            var options = new DbContextOptionsBuilder<ProductContext>()
+                .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString()).Options;
+            var context = new ProductContext(options);
 
-        public DbSet<ProductDetail> Products { get; set; }
-        public DbSet<Category> Categories { get; set; }
-
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
-        {
             string baseDir = AppDomain.CurrentDomain.BaseDirectory;
-            string productPath = Path.Combine(baseDir, @"..\..\..\DbContext\data\Product.csv");
-            string[] productValues = File.ReadAllText(Path.GetFullPath(productPath)).Split('\n');
+            string ecommercePath = Path.Combine(baseDir, @"..\..\..\DbContext\data\Product.csv");
+            string[] productValues = File.ReadAllText(Path.GetFullPath(ecommercePath)).Split('\n');
 
             foreach (string item in productValues)
             {
@@ -26,8 +29,7 @@ namespace Product.DbContexts
                 {
                     string[] row = item.Split(",");
                     {
-
-                        ProductDetail product = new ProductDetail()
+                        context.Products.Add(new ProductDetail()
                         {
                             Id = Guid.Parse(row[0]),
                             Name = row[1],
@@ -35,11 +37,11 @@ namespace Product.DbContexts
                             Quantity = int.Parse(row[3]),
                             Visibility = bool.Parse(row[4]),
                             CategoryId = Guid.Parse(row[5]),
-                        };
-                        modelBuilder.Entity<ProductDetail>().HasData(product);
+                        });
                     }
                 }
             }
+
             string categoryPath = Path.Combine(baseDir, @"..\..\..\DbContext\data\Category.csv");
             string[] categoryValues = File.ReadAllText(Path.GetFullPath(categoryPath)).Split('\n');
 
@@ -49,18 +51,19 @@ namespace Product.DbContexts
                 {
                     string[] row = item.Split(",");
                     {
-                        Category category = new Category()
+                        context.Categories.Add(new Category()
                         {
                             Id = Guid.Parse(row[0]),
                             Name = row[1],
                             Description = row[2],
-                        };
-
-                        modelBuilder.Entity<Category>().HasData(category);
+                        });
                     }
                 }
             }
-            base.OnModelCreating(modelBuilder);
+
+            context.SaveChanges();
+
+            return context;
         }
     }
 }

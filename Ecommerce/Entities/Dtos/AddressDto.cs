@@ -11,7 +11,7 @@ namespace Customer.Entities.Dtos
         public Guid Id { get; set; }
 
         ///<summary>
-        ///user id of who created address
+        ///user id 
         ///</summary>
         public Guid UserId { get; set; }
 
@@ -41,7 +41,7 @@ namespace Customer.Entities.Dtos
         public string Zipcode { get; set; }
 
         ///<summary>
-        ///address type id
+        ///address type 
         ///</summary>
         public string Type { get; set; }
 
