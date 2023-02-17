@@ -11,6 +11,35 @@ namespace Customer.DbContexts
         {
         }
 
+        public void OnBeforeSaving(Guid UserId)
+        {
+            //throw new Exception();
+            System.Collections.Generic.IEnumerable<Microsoft.EntityFrameworkCore.ChangeTracking.EntityEntry> customerEntries = ChangeTracker.Entries();
+            foreach (Microsoft.EntityFrameworkCore.ChangeTracking.EntityEntry entry in customerEntries)
+            {
+                if (entry.Entity is BaseModel customer)
+                {
+                    DateTime now = DateTime.UtcNow;
+                    Guid user = UserId;
+                    switch (entry.State)
+                    {
+                        case EntityState.Modified:
+                            customer.UpdatedAt = new DateTime().ToString();
+                            customer.UpdatedBy = user;
+                            break;
+                        case EntityState.Added:
+                            customer.CreatedAt = new DateTime().ToString();
+                            customer.CreatedBy = user;
+                            break;
+                        default:
+                            break;
+                    }
+                }
+            }
+        }
+
+
+
         public DbSet<Address> Addresses { get; set; }
         public DbSet<User> Users { get; set; }
         public DbSet<CardDetail> Cards { get; set; }

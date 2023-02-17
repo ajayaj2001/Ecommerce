@@ -78,12 +78,12 @@ namespace Customer.Controllers
             if (userFromRepo == null)
             {
                 _logger.LogError("User not found");
-                return NotFound(new ErrorResponse { errorCode = 404, errorMessage = "user not found", errorType = "update-addressbook" });
+                return NotFound(new ErrorResponse { errorCode = 404, errorMessage = "user not found", errorType = "update-user" });
             }
             ValidateInputResponse validate = _userServices.ValidateUserInputUpdate(user, id);
             if (validate.errorCode == 409)
             {
-                return Conflict(new ErrorResponse { errorCode = validate.errorCode, errorMessage = validate.errorMessage, errorType = "update-addressbook" });
+                return Conflict(new ErrorResponse { errorCode = validate.errorCode, errorMessage = validate.errorMessage, errorType = "update-user" });
             }
             else
             {

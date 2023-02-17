@@ -15,15 +15,15 @@ namespace Order.Controllers
     [Route("api")]
     public class WishListController : Controller
     {
-        private readonly IApiService _apiService;
         private readonly IWishListService _wishListService;
+        private readonly ICartService _cartService;
         private readonly ILogger _logger;
 
-        public WishListController(ILogger logger, IWishListService wishListService, IApiService apiService)//, IProductService productService)
+        public WishListController(ILogger logger, IWishListService wishListService, ICartService cartService)
         {
-            _apiService = apiService ?? throw new ArgumentNullException(nameof(apiService));
             _wishListService = wishListService ?? throw new ArgumentNullException(nameof(wishListService));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _cartService = cartService ?? throw new ArgumentNullException(nameof(cartService));
         }
 
         ///<summary> 
@@ -49,7 +49,7 @@ namespace Order.Controllers
             Guid authId = Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
             string token = HttpContext.Request.Headers["Authorization"].ToString().Replace("Bearer", "");
 
-            ResultProductDto product = _apiService.GetProductById(wishList.ProductId, token);
+            ResultProductDto product = _cartService.GetProductById(wishList.ProductId, token);
             if (product == null)
             {
                 _logger.LogError("Product not found");
@@ -147,11 +147,11 @@ namespace Order.Controllers
             if (!_wishListService.checkWishListExist(wishlistName, authId))
             {
                 _logger.LogError("wishlist not found");
-                return NotFound(new ErrorResponse { errorCode = 404, errorMessage = "wishlist not found", errorType = "delete-wishlist" });
+                return NotFound(new ErrorResponse { errorCode = 404, errorMessage = "wishlist not found", errorType = "get-wishlist" });
             }
 
             _logger.LogInformation("Returned wishlist based on name ");
-            return Ok(_wishListService.GetWishListByName(wishlistName, authId,token));
+            return Ok(_wishListService.GetWishListByName(wishlistName, authId, token));
         }
 
         ///<summary> 
@@ -177,7 +177,7 @@ namespace Order.Controllers
             if (!_wishListService.checkWishListExist(wishlistName, authId))
             {
                 _logger.LogError("wishlist not found");
-                return NotFound(new ErrorResponse { errorCode = 404, errorMessage = "wishlist not found", errorType = "delete-wishlist" });
+                return NotFound(new ErrorResponse { errorCode = 404, errorMessage = "wishlist not found", errorType = "move-wishlist" });
             }
             _logger.LogInformation("successfully moved");
             _wishListService.MoveWishListToCart(wishlistName, authId);
@@ -204,7 +204,7 @@ namespace Order.Controllers
             Guid authId = Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
             string token = HttpContext.Request.Headers["Authorization"].ToString().Replace("Bearer", "");
             _logger.LogInformation("Returned wishlist based on name ");
-            return Ok(_wishListService.GetWishListForUser(authId,token));
+            return Ok(_wishListService.GetWishListForUser(authId, token));
         }
 
     }

@@ -42,9 +42,9 @@ namespace Customer
             });
 
             ServiceProvider serviceProvider = services.BuildServiceProvider();
-            ILogger<UserController> loggerAddressBook = serviceProvider.GetService<ILogger<UserController>>();
+            ILogger<UserController> loggerUser = serviceProvider.GetService<ILogger<UserController>>();
             ILogger<AuthController> loggerAuth = serviceProvider.GetService<ILogger<AuthController>>();
-            services.AddSingleton(typeof(ILogger), loggerAddressBook);
+            services.AddSingleton(typeof(ILogger), loggerUser);
             services.AddSingleton(typeof(ILogger), loggerAuth);
             services.AddSingleton<JWTTokenHandler>();
 

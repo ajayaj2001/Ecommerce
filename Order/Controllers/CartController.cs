@@ -17,13 +17,11 @@ namespace Order.Controllers
     [Route("api")]
     public class CartController : Controller
     {
-       private readonly IApiService _apiService;
         private readonly ICartService _cartService;
         private readonly ILogger _logger;
 
-        public CartController(ILogger logger, ICartService cartService, IApiService apiService)
+        public CartController(ILogger logger, ICartService cartService)
         {
-            _apiService = apiService ?? throw new ArgumentNullException(nameof(apiService));
             _cartService = cartService ?? throw new ArgumentNullException(nameof(cartService));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
@@ -50,20 +48,21 @@ namespace Order.Controllers
             Guid authId = Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
             string token = HttpContext.Request.Headers["Authorization"].ToString().Replace("Bearer", "");
 
-            ResultProductDto product = _apiService.GetProductById(cartDetail.ProductId,token);
+            ResultProductDto product = _cartService.GetProductById(cartDetail.ProductId, token);
             if (product == null)
             {
                 _logger.LogError("product not found");
-                return NotFound(new ErrorResponse { errorCode = 404, errorMessage = "product not found", errorType = "add to  cart" }); }
+                return NotFound(new ErrorResponse { errorCode = 404, errorMessage = "product not found", errorType = "add-to-cart" });
+            }
             if (cartDetail.Quantity > product.Quantity)
             {
                 _logger.LogError("quantity exceed the limit");
-                return BadRequest(new ErrorResponse { errorCode = 400, errorMessage = "product quantity exceed", errorType = "add to  cart" });
+                return BadRequest(new ErrorResponse { errorCode = 400, errorMessage = "product quantity exceed", errorType = "add-to-cart" });
             }
             if (_cartService.checkProductExist(cartDetail.ProductId, authId))
             {
                 _logger.LogError("product already exist");
-                return Conflict(new ErrorResponse { errorCode = 409, errorMessage = "product already exist", errorType = "add to cart" });
+                return Conflict(new ErrorResponse { errorCode = 409, errorMessage = "product already exist", errorType = "add-to-cart" });
             }
             _logger.LogInformation("product added to cart successfully");
             return Ok(_cartService.AddToCart(cartDetail, authId));
@@ -88,7 +87,7 @@ namespace Order.Controllers
             Guid authId = Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
             string token = HttpContext.Request.Headers["Authorization"].ToString().Replace("Bearer", "");
             _logger.LogInformation("Returned cart under user");
-            return Ok(_cartService.GetCartForUser(authId,token));
+            return Ok(_cartService.GetCartForUser(authId, token));
         }
 
         ///<summary> 
@@ -112,12 +111,12 @@ namespace Order.Controllers
         [SwaggerResponse(400, "Bad Request", typeof(ErrorResponse))]
         [SwaggerResponse(409, "Conflict", typeof(ErrorResponse))]
         [SwaggerResponse(500, "Internal server error", typeof(ErrorResponse))]
-        public ActionResult<string> UpdateProduct([FromBody] CreateCartDto cartDetail)
+        public ActionResult<string> UpdateCart([FromBody] CreateCartDto cartDetail)
         {
             Guid authId = Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
             string token = HttpContext.Request.Headers["Authorization"].ToString().Replace("Bearer", "");
 
-            ResultProductDto product = _apiService.GetProductById(cartDetail.ProductId, token);
+            ResultProductDto product = _cartService.GetProductById(cartDetail.ProductId, token);
             if (product == null)
             {
                 _logger.LogError("Product not found");
@@ -130,13 +129,13 @@ namespace Order.Controllers
                 return BadRequest(new ErrorResponse { errorCode = 400, errorMessage = "product not found", errorType = "get-cart-id" });
             }
 
-            if (!_cartService.checkProductExist(cartDetail.ProductId,authId))
+            if (!_cartService.checkProductExist(cartDetail.ProductId, authId))
             {
                 _logger.LogError("product not found");
                 return Conflict(new ErrorResponse { errorCode = 409, errorMessage = "product already exist", errorType = "get-cart-id" });
             }
 
-            _cartService.UpdateCartProduct(cartDetail,  authId);
+            _cartService.UpdateCartProduct(cartDetail, authId);
             _logger.LogInformation("Product updated on cart");
             return Ok("updated");
         }
@@ -161,7 +160,7 @@ namespace Order.Controllers
         public IActionResult DeleteCartProduct(Guid productId)
         {
             Guid authId = Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
-            if (!_cartService.checkProductExist(productId,authId))
+            if (!_cartService.checkProductExist(productId, authId))
             {
                 _logger.LogError("product not found");
                 return NotFound(new ErrorResponse { errorCode = 404, errorMessage = "product not found", errorType = "delete-cart" });
@@ -195,17 +194,17 @@ namespace Order.Controllers
             string token = HttpContext.Request.Headers["Authorization"].ToString().Replace("Bearer", "");
 
             List<Cart> cartDetails = _cartService.GetCartDetails(authId).ToList();
-            if (cartDetails.Count()<=0)
+            if (cartDetails.Count() <= 0)
             {
                 _logger.LogError("Cart is empty");
-                return NotFound("Cart is empty");
+                return NotFound(new ErrorResponse { errorCode = 404, errorMessage = "cart is empty", errorType = "move-cart" });
             }
             _logger.LogInformation("Returned wishlist based on name ");
             string result = _cartService.UpdateOrderIdToCart(cartDetails, authId, token);
             if (result == "failed")
             {
                 _logger.LogError("Product out of stock");
-                return BadRequest("product out of stock");
+                return BadRequest(new ErrorResponse { errorCode = 400, errorMessage = "product out of stock", errorType = "move-cart" });
             }
             return Ok(result);
         }

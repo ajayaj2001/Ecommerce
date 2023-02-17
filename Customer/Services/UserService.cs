@@ -7,7 +7,6 @@ using Customer.Entities.ResponseTypes;
 using Microsoft.Extensions.Logging;
 using Customer.Contracts.Services;
 using Customer.Contracts.Repositories;
-using Microsoft.IdentityModel.Tokens;
 using System.Collections.Generic;
 
 namespace Customer.Services
@@ -56,7 +55,6 @@ namespace Customer.Services
         public UserCredential GetUserByUserName(string userName)
         {
             return _userRepository.GetUserCredentialByUserName(userName);
-
         }
 
         ///<summary>
@@ -93,7 +91,7 @@ namespace Customer.Services
             List<Address> addressCollection = _userRepository.GetAddressIds(userId).ToList();
             User userInput = _mapper.Map<User>(userDetails);
             userInput.Id = userFromRepo.Id;
-            userInput.Credentials.UpdatedAt= DateTime.Now.ToString();
+            userInput.Credentials.UpdatedAt = DateTime.Now.ToString();
 
             foreach (CardDetail item in userInput.CardDetails)
             {
@@ -113,7 +111,7 @@ namespace Customer.Services
                 userInput.Addresses.ElementAt(i).Id = value.Id;
                 return value;
             });
-            _mapper.Map(userInput,userFromRepo);
+            _mapper.Map(userInput, userFromRepo);
             userFromRepo.UpdatedAt = DateTime.Now.ToString();
             _userRepository.UpdateUser(userFromRepo);
             _userRepository.Save();
@@ -138,11 +136,6 @@ namespace Customer.Services
                 _logger.LogError("Email already exist");
                 return new ValidateInputResponse() { errorMessage = "Email already exist", errorCode = 409 };
             }
-            if (user.CardDetails.GroupBy(x => x.CardNumber).Any(g => g.Count() > 1))
-            {
-                _logger.LogError("Card already exist");
-                return new ValidateInputResponse() { errorMessage = "Card already exist", errorCode = 409 };
-            }
             return new ValidateInputResponse() { errorMessage = "no error", errorCode = 200 };
         }
 
@@ -158,16 +151,6 @@ namespace Customer.Services
             {
                 _logger.LogError("Email already exist");
                 return new ValidateInputResponse() { errorMessage = "Email already exist", errorCode = 409 };
-            }
-            if (user.Addresses.GroupBy(x => x.Type).Any(g => g.Count() > 1))
-            {
-                _logger.LogError("Address Type already exist");
-                return new ValidateInputResponse() { errorMessage = "Address Type already exist", errorCode = 409 };
-            }
-            if (user.CardDetails.GroupBy(x => x.Type).Any(g => g.Count() > 1))
-            {
-                _logger.LogError("Card Type already exist");
-                return new ValidateInputResponse() { errorMessage = "Card Type already exist", errorCode = 409 };
             }
             return new ValidateInputResponse() { errorMessage = "no error", errorCode = 200 };
         }

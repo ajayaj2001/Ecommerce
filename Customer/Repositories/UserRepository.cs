@@ -23,7 +23,6 @@ namespace Customer.Repositories
         public void CreateUser(User user)
         {
             _context.Users.Add(user);
-
         }
 
         ///<summary>
@@ -32,8 +31,7 @@ namespace Customer.Repositories
         ///<param name="userName"></param>
         public UserCredential GetUserCredentialByUserName(string userName)
         {
-            UserCredential user = _context.credentials.Where(a => a.UserName == userName && a.IsActive).FirstOrDefault();
-            return user;
+            return _context.credentials.Where(a => a.UserName == userName && a.IsActive).FirstOrDefault();
         }
 
         ///<summary>
@@ -41,10 +39,9 @@ namespace Customer.Repositories
         ///</summary>
         ///<param name="userName"></param>
         ///<param name="userId"></param>
-        public UserCredential GetUserCredentialByUserNameUpdate(string userName,Guid userId)
+        public UserCredential GetUserCredentialByUserNameUpdate(string userName, Guid userId)
         {
-            UserCredential user = _context.credentials.Where(a => a.UserName == userName &&a.UserId!=userId && a.IsActive).FirstOrDefault();
-            return user;
+            return _context.credentials.Where(a => a.UserName == userName && a.UserId != userId && a.IsActive).FirstOrDefault();
         }
 
         ///<summary>
@@ -53,8 +50,7 @@ namespace Customer.Repositories
         ///<param name="userId"></param>
         public UserCredential GetUserCredentialByUserId(Guid userId)
         {
-            UserCredential user = _context.credentials.Where(a => a.UserId == userId && a.IsActive).FirstOrDefault();
-            return user;
+            return _context.credentials.Where(a => a.UserId == userId && a.IsActive).FirstOrDefault();
         }
 
         ///<summary>
@@ -63,7 +59,6 @@ namespace Customer.Repositories
         ///<param name="user"></param>
         public void UpdateUser(User user)
         {
-
             _context.Users.Update(user);
         }
 
@@ -89,9 +84,9 @@ namespace Customer.Repositories
         ///</summary>
         ///<param name="email"></param>
         ///param name="id"></param>
-        public bool IsEmailExistUpdate(string email,Guid id)
+        public bool IsEmailExistUpdate(string email, Guid id)
         {
-            return _context.Users.Any(e => e.EmailAddress == email && e.Id!=id && e.IsActive);
+            return _context.Users.Any(e => e.EmailAddress == email && e.Id != id && e.IsActive);
         }
 
         ///<summary>
@@ -100,7 +95,7 @@ namespace Customer.Repositories
         ///<param name="id"></param>
         public IEnumerable<Address> GetAddressIds(Guid id)
         {
-            return _context.Addresses.Where(a => a.UserId == id && a.IsActive );
+            return _context.Addresses.Where(a => a.UserId == id && a.IsActive);
         }
 
         ///<summary>
@@ -118,7 +113,6 @@ namespace Customer.Repositories
         ///<param name="id"></param>
         public User GetUserById(Guid id)
         {
-
             return _context.Users.FirstOrDefault(b => b.Id == id && b.IsActive);
         }
 

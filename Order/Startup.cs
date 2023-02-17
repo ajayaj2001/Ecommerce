@@ -57,9 +57,6 @@ namespace Order
                 });
             });
 
-            /*services.AddScoped<IProductService, ProductService>();
-            services.AddScoped<IProductRepository, ProductRepository>();*/
-            services.AddScoped<IApiService, ApiService>();
             services.AddScoped<IWishListRepository, WishListRepository>();
             services.AddScoped<IWishListService, WishListService>();
             services.AddScoped<ICartService, CartService>();

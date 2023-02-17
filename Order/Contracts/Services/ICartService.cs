@@ -19,7 +19,7 @@ namespace Order.Contracts.Services
         ///</summary>
         ///<param name="userId"></param>
         ///<param name="token"></param>
-        List<ReturnCartDto> GetCartForUser(Guid userId,string token);
+        List<ReturnCartDto> GetCartForUser(Guid userId, string token);
 
         ///<summary>
         ///check if product exist in cart
@@ -40,7 +40,7 @@ namespace Order.Contracts.Services
         ///</summary>
         ///<param name="cartInput"></param>
         ///<param name="authId"></param>
-         void UpdateCartProduct(CreateCartDto cartInput, Guid authId);
+        void UpdateCartProduct(CreateCartDto cartInput, Guid authId);
 
         ///<summary>
         ///fetch cart details in database
@@ -54,6 +54,27 @@ namespace Order.Contracts.Services
         ///<param name="cartDetails"></param>
         ///<param name="authId"></param>
         ///<param name="token"></param>
-        string UpdateOrderIdToCart(List<Cart> cartDetails, Guid authId,string token);
+        string UpdateOrderIdToCart(List<Cart> cartDetails, Guid authId, string token);
+
+        ///<summary>
+        ///update product by ids
+        ///</summary>
+        ///<param name="productDetails"></param>
+        ///<param name="token"></param>
+        bool UpdateProductByIds(List<UpdateProductQuantityDto> productDetails, string token);
+
+        ///<summary>
+        ///get single product by id
+        ///</summary>
+        ///<param name="productId"></param>
+        ///<param name="token"></param>
+        ResultProductDto GetProductById(Guid productId, string token);
+
+        ///<summary>
+        ///get product by ids
+        ///</summary>
+        ///<param name="productIds"></param>
+        ///<param name="token"></param>
+        List<ResultProductDto> GetProductByIds(List<Guid> productIds, string token);
     }
 }

@@ -17,7 +17,7 @@ namespace JWTAuthenticationManager
         /// generate jwt token
         ///</summary>
         ///<param name="authenticationRequest"></param>
-        public AuthenticationResponse? GenerateJwtToken(AuthenticationRequest authenticationRequest)
+        public AuthenticationResponse GenerateJwtToken(AuthenticationRequest authenticationRequest)
         {
             if (string.IsNullOrWhiteSpace(authenticationRequest.UserName) || string.IsNullOrWhiteSpace(authenticationRequest.Password))
                 return null;

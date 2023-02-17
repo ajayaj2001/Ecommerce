@@ -91,7 +91,7 @@ namespace Product.Controllers
             if (!(sortBy == "Name" || sortBy == "Description"))
             {
                 _logger.LogError("SortBy value Not Found");
-                return NotFound(new ErrorResponse { errorCode = 404, errorMessage = "SortBy value Not Found", errorType = "get-users" });
+                return NotFound(new ErrorResponse { errorCode = 404, errorMessage = "SortBy value Not Found", errorType = "get-product" });
             }
             if (category != "")
             {
@@ -99,7 +99,7 @@ namespace Product.Controllers
                 if (categoryFromRepo == null)
                 {
                     category = null;
-                    return NotFound(new ErrorResponse { errorCode = 404, errorMessage = "product type not found", errorType = "create-product" });
+                    return NotFound(new ErrorResponse { errorCode = 404, errorMessage = "product type not found", errorType = "get-product" });
                 }
                 category = categoryFromRepo.Id.ToString();
             }
@@ -108,7 +108,7 @@ namespace Product.Controllers
             if (products == null)
             {
                 _logger.LogError("No Product Found");
-                return NotFound(new ErrorResponse { errorCode = 404, errorMessage = "No AddressBook Found", errorType = "get-users" });
+                return NotFound(new ErrorResponse { errorCode = 404, errorMessage = "No Product Found", errorType = "get-product" });
             }
             _logger.LogInformation("Returned all product book");
             return Ok(products);

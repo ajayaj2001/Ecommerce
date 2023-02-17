@@ -12,14 +12,12 @@ namespace Order.Services
     public class WishListService : IWishListService
     {
         private readonly IMapper _mapper;
-        private readonly IApiService _apiService;
         private readonly ICartService _cartService;
         private readonly IWishListRepository _wishListRepository;
 
-        public WishListService(IMapper mapper, IWishListRepository wishListRepository, ICartService cartService, IApiService apiService)
+        public WishListService(IMapper mapper, IWishListRepository wishListRepository, ICartService cartService)
         {
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
-            _apiService = apiService ?? throw new ArgumentNullException(nameof(apiService));
             _cartService = cartService ?? throw new ArgumentNullException(nameof(CartService));
             _wishListRepository = wishListRepository ?? throw new ArgumentNullException(nameof(wishListRepository));
         }
@@ -93,17 +91,17 @@ namespace Order.Services
         ///<param name="wishlistName"></param>
         ///<param name="authId"></param>
         ///<param name="token"></param>
-        public FetchWishListDto GetWishListByName(string wishlistName, Guid authId,string token)
+        public FetchWishListDto GetWishListByName(string wishlistName, Guid authId, string token)
         {
             FetchWishListDto resultWishList = new FetchWishListDto();
             IEnumerable<WishList> wishListFromRepo = _wishListRepository.GetWishlistByName(wishlistName, authId);
-            List<Guid> ids= new List<Guid>();
+            List<Guid> ids = new List<Guid>();
             resultWishList.Name = wishlistName;
-            for (int i = 0; i < wishListFromRepo.Count(); i++)
+            foreach (WishList wishlist in wishListFromRepo)
             {
-                ids.Add(wishListFromRepo.ElementAt(i).ProductId);
+                ids.Add(wishlist.ProductId);
             }
-            resultWishList.ProductList = _apiService.GetProductByIds(ids, token);
+            resultWishList.ProductList = _cartService.GetProductByIds(ids, token);
             return resultWishList;
         }
 
@@ -115,10 +113,9 @@ namespace Order.Services
         public void MoveWishListToCart(string wishlistName, Guid authId)
         {
             IEnumerable<WishList> wishListFromRepo = _wishListRepository.GetWishlistByName(wishlistName, authId);
-
-            for (int i = 0; i < wishListFromRepo.Count(); i++)
+            foreach (WishList wishList in wishListFromRepo)
             {
-                _cartService.AddToCart(new CreateCartDto() { Quantity = 1, ProductId = wishListFromRepo.ElementAt(i).ProductId }, authId);
+                _cartService.AddToCart(new CreateCartDto() { Quantity = 1, ProductId = wishList.ProductId }, authId);
             }
             DeleteWishlistByName(wishlistName, authId);
         }
@@ -131,15 +128,12 @@ namespace Order.Services
         public List<FetchWishListDto> GetWishListForUser(Guid userId, string token)
         {
             List<FetchWishListDto> resultWishList = new List<FetchWishListDto>();
-
             IEnumerable<string> wishlistNames = _wishListRepository.GetWishlistNameForUser(userId);
-
-            for (int i = 0; i < wishlistNames.Count(); i++)
+            foreach (string wishListName in wishlistNames)
             {
-                resultWishList.Add(GetWishListByName(wishlistNames.ElementAt(i), userId, token));
+                resultWishList.Add(GetWishListByName(wishListName, userId, token));
             }
             return resultWishList;
-
         }
     }
 }

@@ -116,8 +116,7 @@ namespace Product.Services
         ///<param name="productId"></param>
         public ProductDetail GetProductById(Guid productId)
         {
-            ProductDetail product = _productRepository.GetProductById(productId);
-            return product;
+            return _productRepository.GetProductById(productId);
         }
 
         ///<summary>
