@@ -7,7 +7,6 @@ using Microsoft.Extensions.Logging;
 using Order.Entities.Dtos;
 using Swashbuckle.AspNetCore.Annotations;
 using System;
-using System.Security.Claims;
 
 namespace Customer.Controllers
 {

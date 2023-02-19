@@ -324,7 +324,7 @@ namespace CustomerUnitTest
 
             user.Credentials = new UpdateUserCredentialDto()
             {
-                EmailAddress = "tester@gmail.com",
+                EmailAddress = "ajay@gmail.com",
                 Password = "aasdASDF@#$234",
             };
             ActionResult<string> response = _userController.UpdateUser(userId, user);
