@@ -47,14 +47,14 @@ namespace Order.Contracts.Services
         ///<param name="wishlistName"></param>
         ///<param name="authId"></param>
         ///<param name="token"></param>
-        FetchWishListDto GetWishListByName(string wishlistName, Guid authId, string token);
+        FetchWishListDto GetWishListByName(string wishlistName, Guid authId);
 
         ///<summary>
         ///fetch wishlist for user in database
         ///</summary>
         ///<param name="userId"></param>
         ///<param name="token"></param>
-        List<FetchWishListDto> GetWishListForUser(Guid userId, string token);
+        List<FetchWishListDto> GetWishListForUser(Guid userId);
 
         ///<summary>
         ///move wishlist to cart

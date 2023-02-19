@@ -13,5 +13,10 @@ namespace Order.Entities.Dtos
         /// product quantity
         ///</summary>
         public int Quantity { get; set; }
+
+        ///<summary>
+        /// user Id
+        ///</summary>
+        public Guid UserId { get; set; }
     }
 }

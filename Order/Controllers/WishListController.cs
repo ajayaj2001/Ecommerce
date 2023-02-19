@@ -12,6 +12,7 @@ using Order.Entities.ResponseTypes;
 namespace Order.Controllers
 {
     [ApiController]
+    [Authorize]
     [Route("api")]
     public class WishListController : Controller
     {
@@ -36,7 +37,6 @@ namespace Order.Controllers
         ///<response code = "409" >wish list already exist</response>
         ///<response code = "404" >product not found</response>
         ///<response code="500">Internel server error</response>
-        [Authorize]
         [HttpPost("wishlist")]
         [SwaggerOperation(Summary = "Create Wishlist", Description = "To create wishlist with product")]
         [SwaggerResponse(200, "Created", typeof(CreatedSuccessResponse))]
@@ -47,10 +47,8 @@ namespace Order.Controllers
         public ActionResult<string> CreateWishList([FromBody] CreateWishListDto wishList)
         {
             Guid authId = Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
-            string token = HttpContext.Request.Headers["Authorization"].ToString().Replace("Bearer", "");
 
-            ResultProductDto product = _cartService.GetProductById(wishList.ProductId, token);
-            if (product == null)
+            if (_cartService.GetProductById(wishList.ProductId) == null)
             {
                 _logger.LogError("Product not found");
                 return NotFound(new ErrorResponse { errorCode = 404, errorMessage = "wishlist product not found", errorType = "create-wishlist" });
@@ -73,14 +71,13 @@ namespace Order.Controllers
         ///<response code = "401" >Not an authorized user</response>
         ///<response code = "404" >wishlist not found</response>
         ///<response code="500">Internel server error</response>
-        [Authorize]
         [HttpDelete("wishlist/{wishlistName}")]
         [SwaggerOperation(Summary = "Delete wishlist", Description = "To delete an wishlist from database")]
         [SwaggerResponse(200, "Success", typeof(string))]
         [SwaggerResponse(401, "Unauthorized", typeof(ErrorResponse))]
         [SwaggerResponse(404, "Not Found", typeof(ErrorResponse))]
         [SwaggerResponse(500, "Internal server error", typeof(ErrorResponse))]
-        public IActionResult DeleteWishlist(string wishlistName)
+        public ActionResult DeleteWishlist(string wishlistName)
         {
             Guid authId = Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
 
@@ -103,14 +100,13 @@ namespace Order.Controllers
         ///<response code = "401" >Not an authorized user</response>
         ///<response code = "404" >wishlist not found</response>
         ///<response code="500">Internel server error</response>
-        [Authorize]
         [HttpDelete("wishlist")]
         [SwaggerOperation(Summary = "Delete wishlist", Description = "To delete an wishlist from database")]
         [SwaggerResponse(200, "Success", typeof(string))]
         [SwaggerResponse(401, "Unauthorized", typeof(ErrorResponse))]
         [SwaggerResponse(404, "Not Found", typeof(ErrorResponse))]
         [SwaggerResponse(500, "Internal server error", typeof(ErrorResponse))]
-        public IActionResult DeleteWishlistProduct([FromBody] CreateWishListDto wishList)
+        public ActionResult DeleteWishlistProduct([FromBody] CreateWishListDto wishList)
         {
             Guid authId = Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
             if (!_wishListService.checkIfAlreadyExist(wishList, authId))
@@ -132,17 +128,15 @@ namespace Order.Controllers
         ///<response code = "401" >Not an authorized user</response>
         ///<response code = "404" >wishlist not found</response>
         ///<response code="500">Internel server error</response>
-        [Authorize]
         [HttpGet("wishlist/{wishlistName}")]
         [SwaggerOperation(Summary = "Get wishlist", Description = "To get an wishlist details stored in the database")]
         [SwaggerResponse(200, "Success", typeof(WishList))]
         [SwaggerResponse(401, "Unauthorized", typeof(ErrorResponse))]
         [SwaggerResponse(404, "Not Found", typeof(ErrorResponse))]
         [SwaggerResponse(500, "Internal server error", typeof(ErrorResponse))]
-        public IActionResult GetWishlistByName(string wishlistName)
+        public ActionResult GetWishlistByName(string wishlistName)
         {
             Guid authId = Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
-            string token = HttpContext.Request.Headers["Authorization"].ToString().Replace("Bearer", "");
 
             if (!_wishListService.checkWishListExist(wishlistName, authId))
             {
@@ -151,7 +145,7 @@ namespace Order.Controllers
             }
 
             _logger.LogInformation("Returned wishlist based on name ");
-            return Ok(_wishListService.GetWishListByName(wishlistName, authId, token));
+            return Ok(_wishListService.GetWishListByName(wishlistName, authId));
         }
 
         ///<summary> 
@@ -163,14 +157,13 @@ namespace Order.Controllers
         ///<response code = "401" >Not an authorized user</response>
         ///<response code = "404" >wishlist not found</response>
         ///<response code="500">Internel server error</response>
-        [Authorize]
         [HttpGet("wishlisttocart/{wishlistName}")]
         [SwaggerOperation(Summary = "Get wishlist", Description = "To move wishlist products to cart")]
         [SwaggerResponse(200, "Success", typeof(WishList))]
         [SwaggerResponse(401, "Unauthorized", typeof(ErrorResponse))]
         [SwaggerResponse(404, "Not Found", typeof(ErrorResponse))]
         [SwaggerResponse(500, "Internal server error", typeof(ErrorResponse))]
-        public IActionResult MoveWishListToCart(string wishlistName)
+        public ActionResult MoveWishListToCart(string wishlistName)
         {
             Guid authId = Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
 
@@ -192,19 +185,16 @@ namespace Order.Controllers
         ///<response code = "401" >Not an authorized user</response>
         ///<response code = "404" >wishlist not found</response>
         ///<response code="500">Internel server error</response>
-        [Authorize]
         [HttpGet("wishlist")]
         [SwaggerOperation(Summary = "Get wishlist", Description = "To get an wishlist details stored in the database")]
         [SwaggerResponse(200, "Success", typeof(WishList))]
         [SwaggerResponse(401, "Unauthorized", typeof(ErrorResponse))]
-        [SwaggerResponse(404, "Not Found", typeof(ErrorResponse))]
         [SwaggerResponse(500, "Internal server error", typeof(ErrorResponse))]
-        public IActionResult GetWishlist()
+        public ActionResult GetWishlist()
         {
             Guid authId = Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
-            string token = HttpContext.Request.Headers["Authorization"].ToString().Replace("Bearer", "");
             _logger.LogInformation("Returned wishlist based on name ");
-            return Ok(_wishListService.GetWishListForUser(authId, token));
+            return Ok(_wishListService.GetWishListForUser(authId));
         }
 
     }

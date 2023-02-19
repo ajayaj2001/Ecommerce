@@ -17,14 +17,15 @@ namespace Order.Services
     {
         private readonly IMapper _mapper;
         private readonly ICartRepository _cartRepository;
-        public IConfiguration _configuration;
+        public readonly IConfiguration _configuration;
+        private readonly IHttpClientWrapperService client;
 
-
-        public CartService(IMapper mapper, ICartRepository cartRepository, IConfiguration configuration)
+        public CartService(IMapper mapper, ICartRepository cartRepository, IConfiguration configuration, IHttpClientWrapperService client)
         {
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
             _cartRepository = cartRepository ?? throw new ArgumentNullException(nameof(cartRepository));
             _configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
+            this.client = client;
         }
 
         ///<summary>
@@ -40,10 +41,8 @@ namespace Order.Services
                 UpdateCartProduct(cartDetail, authId);
             }
             cart.UserId = authId;
-            cart.CreatedAt = DateTime.Now.ToString();
-            cart.CreatedBy = authId;
             _cartRepository.AddProductToCart(cart);
-            _cartRepository.Save();
+            _cartRepository.Save(authId);
             return cart.Id;
         }
 
@@ -51,22 +50,19 @@ namespace Order.Services
         ///fetch cart in database
         ///</summary>
         ///<param name="userId"></param>
-        public List<ReturnCartDto> GetCartForUser(Guid userId, string token)
+        public List<ReturnCartDto> GetCartForUser(Guid userId)
         {
             List<ReturnCartDto> resultCartDetails = new List<ReturnCartDto>();
 
             IEnumerable<Cart> cartDetails = _cartRepository.GetCartDetailsForUser(userId);
-            foreach (var cart in cartDetails)
-            {
-
-            }
             List<Guid> ids = new List<Guid>();
 
             foreach (Cart cart in cartDetails)
             {
                 ids.Add(cart.ProductId);
             }
-            List<ResultProductDto> productList = GetProductByIds(ids, token);
+
+            List<ResultProductDto> productList = GetProductByIds(ids);
             foreach (Cart cart in cartDetails)
             {
                 ResultProductDto Product = productList.Find(s => s.Id == cart.ProductId);
@@ -100,7 +96,7 @@ namespace Order.Services
         {
             Cart cartDetail = _cartRepository.GetProductFromCart(productId, authId);
             cartDetail.IsActive = false;
-            _cartRepository.Save();
+            _cartRepository.Save(authId);
         }
 
         ///<summary>
@@ -112,10 +108,8 @@ namespace Order.Services
         {
             Cart cart = _cartRepository.GetProductFromCart(cartInput.ProductId, authId);
             _mapper.Map(cartInput, cart);
-            cart.UpdatedAt = DateTime.Now.ToString();
-            cart.UpdatedBy = authId;
             _cartRepository.UpdateCartProduct(cart);
-            _cartRepository.Save();
+            _cartRepository.Save(authId);
         }
 
         ///<summary>
@@ -133,26 +127,26 @@ namespace Order.Services
         ///</summary>
         ///<param name="cartDetails"></param>
         ///<param name="authId"></param>
-        public string UpdateOrderIdToCart(List<Cart> cartDetails, Guid authId, string token)
-        {
-            Guid orderId = Guid.NewGuid();
+        public string UpdateOrderIdToCart(Guid authId,CreateOrderDto orderDetail)
+        {            
+            List<Cart> cartDetails =GetCartDetails(authId).ToList();
             List<UpdateProductQuantityDto> productList = new List<UpdateProductQuantityDto>();
             foreach (Cart cart in cartDetails)
             {
-                productList.Add(new UpdateProductQuantityDto() { Id = cart.ProductId, Quantity = cart.Quantity });
+                productList.Add(new UpdateProductQuantityDto() { Id = cart.ProductId, Quantity = cart.Quantity,UserId=authId });
             }
 
-            bool isProductUpdated = UpdateProductByIds(productList, token);
+            bool isProductUpdated = UpdateProductByIds(productList);
             if (!isProductUpdated)
                 return "failed";
-
+            Guid orderId = Guid.NewGuid();
             foreach (Cart cart in cartDetails)
             {
                 cart.OrderId = orderId;
                 cart.IsActive = false;
                 _cartRepository.UpdateCartProduct(cart);
-                _cartRepository.Save();
             }
+            _cartRepository.Save(authId);
             return orderId.ToString();
         }
 
@@ -160,13 +154,22 @@ namespace Order.Services
         ///update product by ids
         ///</summary>
         ///<param name="productDetails"></param>
-        ///<param name="token"></param>
-        public bool UpdateProductByIds(List<UpdateProductQuantityDto> productDetails, string token)
+        public bool UpdateProductByIds(List<UpdateProductQuantityDto> productDetails)
         {
-            HttpClient client = new HttpClient();
-            client.BaseAddress = new Uri(_configuration.GetConnectionString("base_url"));
-            client.DefaultRequestHeaders.Add("Authorization", "Bearer " + token);
-            HttpResponseMessage response = client.PutAsJsonAsync<List<UpdateProductQuantityDto>>("api/product/updateproducts", productDetails).Result;
+            HttpResponseMessage response = client.UpdateProducts($"{_configuration.GetConnectionString("base_url")}api/product/updateproducts",productDetails).Result;
+            if (response.StatusCode == HttpStatusCode.OK)
+                return true;
+            else
+                return false;
+        }
+
+        ///<summary>
+        ///get order details
+        ///</summary>
+        ///<param name="orderDetails"></param>
+        public bool GetOrderDetails(CreateOrderDto orderDetails)
+        {
+            HttpResponseMessage response = client.GetOrderDetail($"{_configuration.GetConnectionString("base_url")}api/user/getaddresspayment", orderDetails).Result;
             if (response.StatusCode == HttpStatusCode.OK)
                 return true;
             else
@@ -178,15 +181,11 @@ namespace Order.Services
         ///</summary>
         ///<param name="productId"></param>
         ///<param name="token"></param>
-        public ResultProductDto GetProductById(Guid productId, string token)
+        public ResultProductDto GetProductById(Guid productId)
         {
-            HttpClient client = new HttpClient();
-            client.BaseAddress = new Uri(_configuration.GetConnectionString("base_url"));
-            client.DefaultRequestHeaders.Add("Authorization", "Bearer " + token);
             try
             {
-                ResultProductDto response = client.GetFromJsonAsync<ResultProductDto>($"api/product/{productId}").Result;
-                return response;
+                return client.GetProduct($"{_configuration.GetConnectionString("base_url")}api/product/{productId}").Result;
             }
             catch (Exception ex)//404 exception handling
             {
@@ -198,18 +197,13 @@ namespace Order.Services
         ///get product by ids
         ///</summary>
         ///<param name="productIds"></param>
-        ///<param name="token"></param>
-        public List<ResultProductDto> GetProductByIds(List<Guid> productIds, string token)
+        public List<ResultProductDto> GetProductByIds(List<Guid> productIds)
         {
-            HttpClient client = new HttpClient();
-            client.BaseAddress = new Uri(_configuration.GetConnectionString("base_url"));
-            client.DefaultRequestHeaders.Add("Authorization", "Bearer " + token);
-            HttpResponseMessage response = client.PostAsJsonAsync<List<Guid>>("api/product/getproducts", productIds).Result;
+            HttpResponseMessage response = client.GetProducts($"{_configuration.GetConnectionString("base_url")}api/product/getproducts", productIds).Result;
             if (response.StatusCode == HttpStatusCode.OK)
                 return response.Content.ReadFromJsonAsync<List<ResultProductDto>>().Result;
             else
                 return Enumerable.Empty<ResultProductDto>().ToList();
         }
-
     }
 }

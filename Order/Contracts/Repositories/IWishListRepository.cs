@@ -32,7 +32,7 @@ namespace Order.Contracts.Repositories
         ///</summary>
         ///<param name="wishlistName"></param>
         ///<param name="authId"></param>
-        IEnumerable<WishList> GetWishlistByName(string wishlistName, Guid authId);
+        List<WishList> GetWishlistByName(string wishlistName, Guid authId);
 
         ///<summary>
         ///get wishlist product in database
@@ -45,11 +45,11 @@ namespace Order.Contracts.Repositories
         ///get wishlist name in database
         ///</summary>
         ///<param name="authId"></param>
-         IEnumerable<string> GetWishlistNameForUser(Guid authId);
+         List<string> GetWishlistNameForUser(Guid authId);
 
         ///<summary>
         ///save all changes
         ///</summary>
-        bool Save();
+        bool Save(Guid authId);
     }
 }

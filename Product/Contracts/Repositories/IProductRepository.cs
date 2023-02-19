@@ -19,7 +19,7 @@ namespace Product.Contracts.Repositories
         ///<summary>
         ///save all changes
         ///</summary>
-        bool Save();
+        bool Save(Guid authId);
 
         ///<summary>
         ///get all product from db

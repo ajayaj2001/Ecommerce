@@ -9,6 +9,7 @@ namespace CustomerUnitTest.InMemoryContext
 {
     public static class InMemorydbContext
     {
+
         /// <summary>
         /// This method is used to create the InMemeorydatabase
         /// </summary>
@@ -21,7 +22,6 @@ namespace CustomerUnitTest.InMemoryContext
             string baseDir = AppDomain.CurrentDomain.BaseDirectory;
             string ecommercePath = Path.Combine(baseDir, @"..\..\..\DbContext\data\Ecommerce.csv");
             string[] userValues = File.ReadAllText(Path.GetFullPath(ecommercePath)).Split('\n');
-
             foreach (string item in userValues)
             {
                 if (!string.IsNullOrEmpty(item))
@@ -33,10 +33,8 @@ namespace CustomerUnitTest.InMemoryContext
                             Id = Guid.Parse(row[0]),
                             FirstName = row[1],
                             LastName = row[2],
-                            EmailAddress = row[3],
                             CreatedBy = Guid.Parse(row[0]),
                             CreatedAt = new DateTime().ToString(),
-
                             Addresses = new List<Address>()
                         {
                         new Address(){
@@ -71,7 +69,7 @@ namespace CustomerUnitTest.InMemoryContext
                             Credentials = new UserCredential()
                             {
                                 Id = Guid.Parse(row[19]),
-                                UserName = row[20],
+                                EmailAddress = row[3],
                                 Password = row[21],
                                 Role = row[22],
                                 UserId = Guid.Parse(row[0]),

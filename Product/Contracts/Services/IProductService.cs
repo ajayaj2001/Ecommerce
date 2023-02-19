@@ -55,10 +55,10 @@ namespace Product.Contracts.Services
         ///update product 
         ///</summary>
         ///<param name="authId"></param>
-        ///<param name="productFromRepo"></param>
+        ///<param name="productId"></param>
         ///<param name="productInput"></param>
         ///param name="categoryId"></param>
-        void UpdateProduct(UpdateProductDto productInput, ProductDetail productFromRepo, Guid authId, Guid categoryId);
+        void UpdateProduct(UpdateProductDto productInput, Guid productId, Guid authId, Guid categoryId);
 
         ///<summary>
         ///update product list 

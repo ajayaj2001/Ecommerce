@@ -33,10 +33,8 @@ namespace Product.Services
         public Guid CreateProduct(CreateProductDto productInput, Guid authId)
         {
             ProductDetail product = _mapper.Map<ProductDetail>(productInput);
-            product.CreatedAt = DateTime.Now.ToString();
-            product.CreatedBy = authId;
             _productRepository.CreateProduct(product);
-            _productRepository.Save();
+            _productRepository.Save(authId);
             return product.Id;
         }
 
@@ -127,7 +125,7 @@ namespace Product.Services
         {
             ProductDetail productFromRepo = _productRepository.GetProductById(productId);
             productFromRepo.IsActive = false;
-            _productRepository.Save();
+            _productRepository.Save(productId);
         }
 
         ///<summary>
@@ -136,14 +134,13 @@ namespace Product.Services
         ///<param name="authId"></param>
         ///<param name="productFromRepo"></param>
         ///<param name="productInput"></param>
-        public void UpdateProduct(UpdateProductDto productInput, ProductDetail productFromRepo, Guid authId, Guid categoryId)
+        public void UpdateProduct(UpdateProductDto productInput,Guid productId ,Guid authId, Guid categoryId)
         {
+            ProductDetail productFromRepo = _productRepository.GetProductById(productId);
             productInput.Type = categoryId.ToString();
             _mapper.Map(productInput, productFromRepo);
-            productFromRepo.UpdatedAt = DateTime.Now.ToString();
-            productFromRepo.UpdatedBy = authId;
             _productRepository.UpdateProduct(productFromRepo);
-            _productRepository.Save();
+            _productRepository.Save(authId);
         }
 
         ///<summary>
@@ -160,10 +157,10 @@ namespace Product.Services
                 {
                     product.Quantity -= productDetail.Quantity;
                     _productRepository.UpdateProduct(product);
-                    _productRepository.Save();
+                    _productRepository.Save(productDetail.UserId);
                 }
             }
-            _productRepository.Save();
+            
         }
     }
 }

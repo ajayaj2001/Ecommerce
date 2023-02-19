@@ -56,7 +56,7 @@ namespace Order
                     Version = "v1"
                 });
             });
-
+            services.AddHttpClient<IHttpClientWrapperService, HttpClientWrapperService>();
             services.AddScoped<IWishListRepository, WishListRepository>();
             services.AddScoped<IWishListService, WishListService>();
             services.AddScoped<ICartService, CartService>();

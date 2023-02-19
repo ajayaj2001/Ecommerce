@@ -22,7 +22,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Customer\Customer.csproj" />
+    <ProjectReference Include="..\Ecommerce\Customer.csproj" />
     <ProjectReference Include="..\JWTAuthenticationManager\JWTAuthenticationManager.csproj" />
   </ItemGroup>
 

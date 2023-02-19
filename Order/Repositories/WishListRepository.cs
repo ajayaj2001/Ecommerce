@@ -51,9 +51,9 @@ namespace Order.Repositories
         ///</summary>
         ///<param name="wishlistName"></param>
         ///<param name="authId"></param>
-        public IEnumerable<WishList> GetWishlistByName(string wishlistName, Guid authId)
+        public List<WishList> GetWishlistByName(string wishlistName, Guid authId)
         {
-            return _context.WishLists.Where(list => list.Name == wishlistName && list.UserId == authId && list.IsActive);
+            return _context.WishLists.Where(list => list.Name == wishlistName && list.UserId == authId && list.IsActive).ToList();
         }
 
         ///<summary>
@@ -70,16 +70,17 @@ namespace Order.Repositories
         ///get wishlist name in database
         ///</summary>
         ///<param name="authId"></param>
-        public IEnumerable<string> GetWishlistNameForUser(Guid authId)
+        public List<string> GetWishlistNameForUser(Guid authId)
         {
-            return _context.WishLists.Where(x=>x.UserId==authId&&x.IsActive).Select(x=>x.Name).Distinct();
+            return _context.WishLists.Where(x=>x.UserId==authId&&x.IsActive).Select(x=>x.Name).Distinct().ToList();
         }
 
         ///<summary>
         ///save all changes
         ///</summary>
-        public bool Save()
+        public bool Save(Guid authId)
         {
+            _context.OnBeforeSaving(authId);
             return _context.SaveChanges() >= 0;
         }
     }

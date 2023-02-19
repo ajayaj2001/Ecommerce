@@ -4,6 +4,19 @@
   },
   "ReRoutes": [
     {
+      "UpstreamPathTemplate": "/api/user/getaddresspayment",
+      "UpstreamHttpMethod": [ "POST" ],
+      "DownstreamPathTemplate": "/api/customer/getaddresspayment",
+      "DownstreamHttpMethod": [ "POST" ],
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 3000
+        }
+      ]
+    },
+    {
       "UpstreamPathTemplate": "/api/user",
       "UpstreamHttpMethod": [ "POST" ],
       "DownstreamPathTemplate": "/api/customer",
@@ -134,26 +147,13 @@
           "Host": "localhost",
           "Port": 3022
         }
-      ],
-    },
-    {
-      "UpstreamPathTemplate": "/api/",
-      "UpstreamHttpMethod": [ "GET" ],
-      "DownstreamPathTemplate": "/api/carttoorder",
-      "DownstreamHttpMethod": [ "GET" ],
-      "DownstreamScheme": "http",
-      "DownstreamHostAndPorts": [
-        {
-          "Host": "localhost",
-          "Port": 3022
-        }
       ]
     },
     {
       "UpstreamPathTemplate": "/api/carttoorder",
-      "UpstreamHttpMethod": [ "GET" ],
+      "UpstreamHttpMethod": [ "POST" ],
       "DownstreamPathTemplate": "/api/carttoorder",
-      "DownstreamHttpMethod": [ "GET" ],
+      "DownstreamHttpMethod": [ "POST" ],
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
@@ -188,5 +188,6 @@
         }
       ]
     }
+
   ]
 }

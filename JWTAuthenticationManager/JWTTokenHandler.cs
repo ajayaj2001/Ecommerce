@@ -19,8 +19,6 @@ namespace JWTAuthenticationManager
         ///<param name="authenticationRequest"></param>
         public AuthenticationResponse GenerateJwtToken(AuthenticationRequest authenticationRequest)
         {
-            if (string.IsNullOrWhiteSpace(authenticationRequest.UserName) || string.IsNullOrWhiteSpace(authenticationRequest.Password))
-                return null;
 
             var tokenExpiryTimeStamp = DateTime.Now.AddMinutes(JWT_TOKEN_VALIDITY_MINS);
             var tokenkey = Encoding.ASCII.GetBytes(JWT_SECURITY_KEY);
@@ -45,7 +43,7 @@ namespace JWTAuthenticationManager
             var token = jwtSecurityTokenHandler.WriteToken(securityToken);
             return new AuthenticationResponse
             {
-                UserName = authenticationRequest.UserName,
+                EmailAddress = authenticationRequest.EmailAddress,
                 ExpiresIn = (int)tokenExpiryTimeStamp.Subtract(DateTime.Now).TotalSeconds,
                 JwtToken = token,
             };

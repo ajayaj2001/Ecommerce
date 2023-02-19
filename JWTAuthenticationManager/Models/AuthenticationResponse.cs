@@ -9,7 +9,7 @@ namespace JWTAuthenticationManager.Models
         ///<summary>
         /// user name
         ///</summary>
-        public string UserName { get; set; }
+        public string EmailAddress { get; set; }
 
         ///<summary>
         /// jwt token

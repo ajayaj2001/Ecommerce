@@ -114,7 +114,7 @@ namespace CustomerUnitTest
             {
                 FirstName = "ajay",
                 LastName = "kumar",
-                EmailAddress = "ajay@ajay.live",
+                
             };
             user.CardDetails.Add(new CreateCardDto()
             {
@@ -137,7 +137,7 @@ namespace CustomerUnitTest
             });
             user.Credentials=new CreateUserCredentialDto()
             {
-                UserName = "ajayhere",
+                EmailAddress = "ajay@ajay.live",
                 Password = "aasdASDF@#$234",
                 Role = "customer",
             };
@@ -156,7 +156,7 @@ namespace CustomerUnitTest
             {
                 FirstName = "ajay",
                 LastName = "kumar",
-                EmailAddress = "ajay@ajay.live",
+               
             };
 
             user.CardDetails.Add(new CreateCardDto()
@@ -182,7 +182,7 @@ namespace CustomerUnitTest
 
             user.Credentials = new CreateUserCredentialDto()
             {
-                UserName = "tester",
+                EmailAddress = "tester@gmail.com",
                 Password = "aasdASDF@#$234",
                 Role = "customer",
             };
@@ -201,7 +201,7 @@ namespace CustomerUnitTest
             {
                 FirstName = "ajay",
                 LastName = "kumar",
-                EmailAddress = "ajay@ajay.live",
+                
             };
 
             user.CardDetails.Add(new UpdateCardDto()
@@ -227,6 +227,7 @@ namespace CustomerUnitTest
 
             user.Credentials = new UpdateUserCredentialDto()
             {
+                EmailAddress = "ajay@ajay.live",
                 Password = "aasdASDF@#$234",
             };
 
@@ -244,7 +245,7 @@ namespace CustomerUnitTest
             {
                 FirstName = "ajay",
                 LastName = "kumar",
-                EmailAddress = "ajay@ajay.live",
+                
             };
 
             user.CardDetails.Add(new UpdateCardDto()
@@ -270,6 +271,7 @@ namespace CustomerUnitTest
 
             user.Credentials = new UpdateUserCredentialDto()
             {
+                EmailAddress = "ajay@ajay.live",
                 Password = "aasdASDF@#$234",
             };
             Guid userId2 = Guid.Parse("5bfdfa9f-ffa2-4c31-40de-08db05cf4685");
@@ -287,7 +289,7 @@ namespace CustomerUnitTest
             {
                 FirstName = "ajay",
                 LastName = "kumar",
-                EmailAddress = "ajay@ajay.live",
+               
             };
 
             user.CardDetails.Add(new UpdateCardDto()
@@ -322,6 +324,7 @@ namespace CustomerUnitTest
 
             user.Credentials = new UpdateUserCredentialDto()
             {
+                EmailAddress = "tester@gmail.com",
                 Password = "aasdASDF@#$234",
             };
             ActionResult<string> response = _userController.UpdateUser(userId, user);
@@ -334,7 +337,7 @@ namespace CustomerUnitTest
         [Fact]
         public void LoginUser_UnauthorizedObjectResult()
         {
-            LoginCredentialDto loginCredential = new LoginCredentialDto() { UserName = "testerwrong", Password= "tester2001" };
+            LoginCredentialDto loginCredential = new LoginCredentialDto() { EmailAddress = "ajay@gmail.com", Password= "tester2001" };
              ActionResult response = _authController.UserLogin(loginCredential) as ActionResult;
             Assert.IsType<UnauthorizedObjectResult>(response);
         }
@@ -345,7 +348,7 @@ namespace CustomerUnitTest
         [Fact]
         public void LoginUser_OkObjectResult()
         {
-            LoginCredentialDto loginCredential = new LoginCredentialDto() { UserName = "tester", Password = "tester2001" };
+            LoginCredentialDto loginCredential = new LoginCredentialDto() { EmailAddress = "tester@gmail.com", Password = "tester2001" };
             ActionResult response = _authController.UserLogin(loginCredential) as ActionResult;
             Assert.IsType<OkObjectResult>(response);
         }

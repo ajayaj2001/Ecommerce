@@ -56,12 +56,9 @@ namespace Product.Controllers
                 _logger.LogError("product type not found");
                 return NotFound(new ErrorResponse { errorCode = 404, errorMessage = "product type not found", errorType = "create-product" });
             }
-            else
-            {
-                product.Type = category.Id.ToString();
-                _logger.LogInformation("product created successfully");
-                return Ok(_productServices.CreateProduct(product, authId));
-            }
+            product.Type = category.Id.ToString();
+            _logger.LogInformation("product created successfully");
+            return Ok(_productServices.CreateProduct(product, authId));
         }
 
         ///<summary> 
@@ -93,8 +90,8 @@ namespace Product.Controllers
                 _logger.LogError("SortBy value Not Found");
                 return NotFound(new ErrorResponse { errorCode = 404, errorMessage = "SortBy value Not Found", errorType = "get-product" });
             }
-            if (category != "")
-            {
+            if (category != "")//check user entered category or not 
+            {//if category not entered dont check category exist 
                 Category categoryFromRepo = _productServices.GetCategoryByName(category);
                 if (categoryFromRepo == null)
                 {
@@ -123,18 +120,18 @@ namespace Product.Controllers
         ///<response code = "401" >Not an authorized user</response>
         ///<response code = "404" >product not found</response>
         ///<response code="500">Internel server error</response>
-        [Authorize]
+        [AllowAnonymous]
         [HttpGet("product/{id}", Name = "GetProduct")]
         [SwaggerOperation(Summary = "Get Product", Description = "To get an product details stored in the database")]
         [SwaggerResponse(200, "Success", typeof(ProductDetail))]
         [SwaggerResponse(401, "Unauthorized", typeof(ErrorResponse))]
         [SwaggerResponse(404, "Not Found", typeof(ErrorResponse))]
         [SwaggerResponse(500, "Internal server error", typeof(ErrorResponse))]
-        public IActionResult GetProductById(Guid id)
+        public ActionResult GetProductById(Guid id)
         {
-            string role = User.Claims.Where(c => c.Type == ClaimTypes.Role).Select(c => c.Value).ToList()[0];
+            //string role = User.Claims.Where(c => c.Type == ClaimTypes.Role).Select(c => c.Value).ToList()[0];
             ProductDto foundProduct = _productServices.GetDetailedProductById(id);
-            if (foundProduct == null || !(foundProduct.Visibility || role == "admin"))
+            if (foundProduct == null )//|| !(foundProduct.Visibility || role == "admin"))
             {
                 _logger.LogError("product not found");
                 return NotFound(new ErrorResponse { errorCode = 404, errorMessage = "product not found", errorType = "get-product" });
@@ -175,7 +172,7 @@ namespace Product.Controllers
                 _logger.LogError("Product type not found");
                 return NotFound(new ErrorResponse { errorCode = 404, errorMessage = "product type not found", errorType = "update-product" });
             };
-            _productServices.UpdateProduct(productInput, productFromRepo, authId, category.Id);
+            _productServices.UpdateProduct(productInput, id, authId, category.Id);
             _logger.LogInformation("Product updated");
             return Ok("updated");
         }
@@ -218,7 +215,7 @@ namespace Product.Controllers
         ///<response code = "401" >Not an authorized user</response>
         ///<response code = "404" >product not found</response>
         ///<response code="500">Internel server error</response>
-        [Authorize]
+        [AllowAnonymous]
         [HttpPost("product/getproducts", Name = "GetProducts")]
         [SwaggerOperation(Summary = "Get Products", Description = "To get an product details stored in the database")]
         [SwaggerResponse(200, "Success", typeof(ProductDetail))]
@@ -240,7 +237,7 @@ namespace Product.Controllers
         ///<response code = "401" >Not an authorized user</response>
         ///<response code = "404" >product not found</response>
         ///<response code="500">Internel server error</response>
-        [Authorize]
+        [AllowAnonymous]
         [HttpPut("product/updateproducts", Name = "UpdateProducts")]
         [SwaggerOperation(Summary = "update Products", Description = "To update an product details stored in the database")]
         [SwaggerResponse(200, "Success", typeof(ProductDetail))]

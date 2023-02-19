@@ -17,15 +17,8 @@ namespace JWTAuthenticationManager.Models
         ///<summary>
         ///user name 
         ///</summary>
-        [JsonProperty(PropertyName = "user_name")]
         [Required]
-        public string UserName { get; set; }
-
-        ///<summary>
-        ///password 
-        ///</summary>
-        [Required]
-        public string Password { get; set; }
+        public string EmailAddress { get; set; }
 
         ///<summary>
         ///user role

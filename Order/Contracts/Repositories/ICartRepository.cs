@@ -41,6 +41,6 @@ namespace Order.Contracts.Repositories
         ///<summary>
         ///save all changes
         ///</summary>
-        bool Save();
+        bool Save(Guid authId);
     }
 }

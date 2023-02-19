@@ -11,6 +11,31 @@ namespace Product.DbContexts
         {
         }
 
+        public void OnBeforeSaving(Guid UserId)
+        {
+            System.Collections.Generic.IEnumerable<Microsoft.EntityFrameworkCore.ChangeTracking.EntityEntry> productEntries = ChangeTracker.Entries();
+            foreach (Microsoft.EntityFrameworkCore.ChangeTracking.EntityEntry entry in productEntries)
+            {
+                if (entry.Entity is BaseModel customer)
+                {
+                    Guid user = UserId;
+                    switch (entry.State)
+                    {
+                        case EntityState.Modified:
+                            customer.UpdatedAt = new DateTime().ToString();
+                            customer.UpdatedBy = user;
+                            break;
+                        case EntityState.Added:
+                            customer.CreatedAt = new DateTime().ToString();
+                            customer.CreatedBy = user;
+                            break;
+                        default:
+                            break;
+                    }
+                }
+            }
+        }
+
         public DbSet<ProductDetail> Products { get; set; }
         public DbSet<Category> Categories { get; set; }
 

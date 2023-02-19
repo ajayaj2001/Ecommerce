@@ -5,7 +5,6 @@ using Order.Entities.Dtos;
 using Order.Entities.Models;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace Order.Services
 {
@@ -31,10 +30,8 @@ namespace Order.Services
         {
             WishList wishList = _mapper.Map<WishList>(wishListInput);
             wishList.UserId = authId;
-            wishList.CreatedAt = DateTime.Now.ToString();
-            wishList.CreatedBy = authId;
             _wishListRepository.CreateWishList(wishList);
-            _wishListRepository.Save();
+            _wishListRepository.Save(authId);
             return wishList.Id;
         }
 
@@ -60,7 +57,7 @@ namespace Order.Services
             {
                 list.IsActive = false;
             }
-            _wishListRepository.Save();
+            _wishListRepository.Save(authId);
         }
 
         ///<summary>
@@ -72,7 +69,7 @@ namespace Order.Services
         {
             WishList wishListFromRepo = _wishListRepository.GetWishlistProduct(wishlistName, authId);
             wishListFromRepo.IsActive = false;
-            _wishListRepository.Save();
+            _wishListRepository.Save(authId);
         }
 
         ///<summary>
@@ -91,17 +88,18 @@ namespace Order.Services
         ///<param name="wishlistName"></param>
         ///<param name="authId"></param>
         ///<param name="token"></param>
-        public FetchWishListDto GetWishListByName(string wishlistName, Guid authId, string token)
+        public FetchWishListDto GetWishListByName(string wishlistName, Guid authId)
         {
             FetchWishListDto resultWishList = new FetchWishListDto();
-            IEnumerable<WishList> wishListFromRepo = _wishListRepository.GetWishlistByName(wishlistName, authId);
+            List<WishList> wishListFromRepo = _wishListRepository.GetWishlistByName(wishlistName, authId);
             List<Guid> ids = new List<Guid>();
             resultWishList.Name = wishlistName;
-            foreach (WishList wishlist in wishListFromRepo)
+
+            foreach(WishList wishlist in wishListFromRepo)
             {
                 ids.Add(wishlist.ProductId);
             }
-            resultWishList.ProductList = _cartService.GetProductByIds(ids, token);
+            resultWishList.ProductList = _cartService.GetProductByIds(ids);
             return resultWishList;
         }
 
@@ -125,15 +123,16 @@ namespace Order.Services
         ///</summary>
         ///<param name="userId"></param>
         ///<param name="token"></param>
-        public List<FetchWishListDto> GetWishListForUser(Guid userId, string token)
+        public List<FetchWishListDto> GetWishListForUser(Guid userId)
         {
             List<FetchWishListDto> resultWishList = new List<FetchWishListDto>();
-            IEnumerable<string> wishlistNames = _wishListRepository.GetWishlistNameForUser(userId);
+            List<string> wishlistNames = _wishListRepository.GetWishlistNameForUser(userId);
             foreach (string wishListName in wishlistNames)
             {
-                resultWishList.Add(GetWishListByName(wishListName, userId, token));
+                resultWishList.Add(GetWishListByName(wishListName, userId));
             }
             return resultWishList;
+
         }
     }
 }

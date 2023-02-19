@@ -66,8 +66,9 @@ namespace Order.Repositories
         ///<summary>
         ///save all changes
         ///</summary>
-        public bool Save()
+        public bool Save(Guid authId)
         {
+            _context.OnBeforeSaving(authId);
             return _context.SaveChanges() >= 0;
         }
     }
