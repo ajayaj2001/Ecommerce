@@ -20,27 +20,27 @@ namespace JWTAuthenticationManager
         public AuthenticationResponse GenerateJwtToken(AuthenticationRequest authenticationRequest)
         {
 
-            var tokenExpiryTimeStamp = DateTime.Now.AddMinutes(JWT_TOKEN_VALIDITY_MINS);
-            var tokenkey = Encoding.ASCII.GetBytes(JWT_SECURITY_KEY);
-            var claimsIdentity = new ClaimsIdentity(new List<Claim>
+            DateTime tokenExpiryTimeStamp = DateTime.Now.AddMinutes(JWT_TOKEN_VALIDITY_MINS);
+            byte[] tokenkey = Encoding.ASCII.GetBytes(JWT_SECURITY_KEY);
+            ClaimsIdentity claimsIdentity = new ClaimsIdentity(new List<Claim>
             {
                 new Claim (JwtRegisteredClaimNames.Sub, authenticationRequest.Id.ToString()),
                 new Claim (ClaimTypes.Role,authenticationRequest.Role)
             });
 
-            var signingCredentials = new SigningCredentials(
+            SigningCredentials signingCredentials = new SigningCredentials(
                   new SymmetricSecurityKey(tokenkey),
                   SecurityAlgorithms.HmacSha256Signature);
 
-            var securityTokenDescriptor = new SecurityTokenDescriptor
+            SecurityTokenDescriptor securityTokenDescriptor = new SecurityTokenDescriptor
             {
                 Subject = claimsIdentity,
                 Expires = tokenExpiryTimeStamp,
                 SigningCredentials = signingCredentials
             };
-            var jwtSecurityTokenHandler = new JwtSecurityTokenHandler();
-            var securityToken = jwtSecurityTokenHandler.CreateToken(securityTokenDescriptor);
-            var token = jwtSecurityTokenHandler.WriteToken(securityToken);
+            JwtSecurityTokenHandler jwtSecurityTokenHandler = new JwtSecurityTokenHandler();
+            SecurityToken securityToken = jwtSecurityTokenHandler.CreateToken(securityTokenDescriptor);
+            string token = jwtSecurityTokenHandler.WriteToken(securityToken);
             return new AuthenticationResponse
             {
                 EmailAddress = authenticationRequest.EmailAddress,

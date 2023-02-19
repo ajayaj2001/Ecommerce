@@ -75,7 +75,7 @@ namespace OrderUnitTest
             _wishListRepository = new WishListRepository(_context);
 
             string userId = "5bfdfa9f-ffa2-4c31-40de-08db05cf468e";
-            var mockClient = new Mock<IHttpClientWrapperService>();
+            Mock<IHttpClientWrapperService> mockClient = new Mock<IHttpClientWrapperService>();
             mockClient.Setup(x => x.GetProduct(It.IsAny<string>())).Returns(productIdTask);
             mockClient.Setup(x => x.GetProducts(It.IsAny<string>(), It.IsAny<List<Guid>>())).Returns(productIdsTask);
 

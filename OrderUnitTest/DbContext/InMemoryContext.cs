@@ -13,9 +13,9 @@ namespace ProductUnitTest.InMemoryContext
         /// </summary>
         public static OrderContext orderContext()
         {
-            var options = new DbContextOptionsBuilder<OrderContext>()
+            DbContextOptions<OrderContext> options = new DbContextOptionsBuilder<OrderContext>()
                 .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString()).Options;
-            var context = new OrderContext(options);
+            OrderContext context = new OrderContext(options);
 
             string baseDir = AppDomain.CurrentDomain.BaseDirectory;
             string ecommercePath = Path.Combine(baseDir, @"..\..\..\DbContext\data\Wishlist.csv");

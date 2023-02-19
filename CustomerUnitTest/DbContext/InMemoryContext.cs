@@ -15,9 +15,9 @@ namespace CustomerUnitTest.InMemoryContext
         /// </summary>
         public static CustomerContext customerContext()
         {
-            var options = new DbContextOptionsBuilder<CustomerContext>()
+            DbContextOptions<CustomerContext> options = new DbContextOptionsBuilder<CustomerContext>()
                 .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString()).Options;
-            var context = new CustomerContext(options);
+            CustomerContext context = new CustomerContext(options);
 
             string baseDir = AppDomain.CurrentDomain.BaseDirectory;
             string ecommercePath = Path.Combine(baseDir, @"..\..\..\DbContext\data\Ecommerce.csv");
